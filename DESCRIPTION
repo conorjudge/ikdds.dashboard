@@ -1,0 +1,51 @@
+Package: ikdds.dashboard
+Title: IKDDS Haemodialysis Audit Dashboard
+Version: 0.1.0
+Authors@R: c(
+    person("Conor", "Judge", role = c("aut", "cre"),
+           email = "conor.judge@hse.ie"),
+    person("Michelle", "Costello", role = "ctb"))
+Description: Interactive Shiny dashboard for the Irish Kidney Disease Data
+    System (IKDDS) annual haemodialysis audit. Renders 23 clinical metrics
+    across 7 domains (demographics, PRD, dialysis adequacy, blood pressure,
+    biochemistry, anaemia, vascular access) as caterpillar plots, funnel
+    plots, and patient-level drill-down tables. Supports both synthetic
+    demo data and live REDCap data sources.
+License: file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Depends: R (>= 4.1.0)
+Imports:
+    shiny (>= 1.8.0),
+    bslib (>= 0.6.0),
+    ggplot2 (>= 3.4.0),
+    plotly,
+    DT,
+    dplyr,
+    tidyr,
+    tibble,
+    magrittr,
+    rlang,
+    glue,
+    cli,
+    purrr,
+    stringr,
+    stats,
+    readr
+Suggests:
+    ikdds,
+    testthat (>= 3.0.0),
+    mockery,
+    shinytest2,
+    vdiffr,
+    knitr,
+    rmarkdown,
+    pkgdown,
+    covr,
+    roxygen2,
+    devtools,
+    usethis
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+URL: https://conorjudge.github.io/ikdds/

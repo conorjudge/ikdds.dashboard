@@ -1,0 +1,102 @@
+/* IKDDS Dashboard - HSE Branding CSS */
+
+:root {
+  --hse-teal: #00617F;
+  --hse-dark-teal: #004B5F;
+  --hse-light-teal: #4DA8C4;
+  --hse-green: #28A745;
+  --hse-orange: #F58220;
+  --hse-red: #DC3545;
+}
+
+/* Navbar styling */
+.navbar {
+  background-color: var(--hse-teal) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Card styling */
+.card {
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.card-header {
+  background-color: var(--hse-teal);
+  color: white;
+  font-weight: 600;
+  border-radius: 8px 8px 0 0 !important;
+  padding: 0.75rem 1rem;
+}
+
+/* Value box styling */
+.bslib-value-box {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Sidebar styling */
+.bslib-sidebar-layout > .sidebar {
+  background-color: #F8F9FA;
+  border-right: 1px solid #E9ECEF;
+}
+
+/* DataTable styling */
+.dataTables_wrapper {
+  font-size: 0.9rem;
+}
+
+table.dataTable thead th {
+  background-color: var(--hse-teal);
+  color: white;
+  border-bottom: 2px solid var(--hse-dark-teal);
+}
+
+table.dataTable tbody tr:hover {
+  background-color: #E8F4F8 !important;
+}
+
+/* Plot containers */
+.plotly {
+  border-radius: 4px;
+}
+
+/* Filter panel */
+.filter-panel .form-group {
+  margin-bottom: 0.75rem;
+}
+
+/* Code viewer modal */
+.code-viewer pre {
+  background-color: #2D2D2D;
+  color: #F8F8F2;
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* National average line label */
+.national-avg-label {
+  font-style: italic;
+  color: var(--hse-red);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .bslib-value-box {
+    margin-bottom: 0.5rem;
+  }
+
+  .card-header {
+    font-size: 0.9rem;
+  }
+}

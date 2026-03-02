@@ -1,0 +1,70 @@
+---
+title: "IKDDS Dashboard Overview"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{IKDDS Dashboard Overview}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+The `ikdds.dashboard` package provides an interactive Shiny dashboard for
+the Irish Kidney Disease Data System (IKDDS) annual haemodialysis audit.
+It renders 23 clinical metrics across 7 domains as caterpillar plots,
+funnel plots, and patient-level drill-down tables.
+
+## Quick Start
+
+```{r eval=FALSE}
+library(ikdds.dashboard)
+
+# Launch with synthetic demo data (default)
+run_app()
+```
+
+## Data Sources
+
+The dashboard supports two data sources, controlled by the
+`IKDDS_DASH_DATA_SOURCE` environment variable:
+
+- **synthetic** (default): Generates ~1,200 realistic patients across
+  7 Irish renal centres. No credentials needed.
+- **redcap**: Reads live data from the IKDDS REDCap project.
+  Requires `IKDDS_REDCAP_URI` and `IKDDS_REDCAP_TOKEN`.
+
+## Clinical Domains
+
+| Domain | Metrics | Key Plots |
+|--------|---------|-----------|
+| Demographics | Patient counts, age, gender | Tables, bar charts |
+| PRD | ERA classification | Tables, stacked bars |
+| Dialysis | URR, session freq/duration | Caterpillar, funnel |
+| Blood Pressure | Pre/post-HD BP | Caterpillar, funnel |
+| Biochemistry | PO4, Ca, PTH, CKD-MBD | Caterpillar, funnel |
+| Bicarb/K+ | Bicarbonate, potassium | Caterpillar, funnel |
+| Anaemia | Hb, ferritin | Caterpillar, funnel, histogram |
+| Vascular Access | AVF, AVG, catheter | Tables, bar charts |
+
+## Using Metric Functions Standalone
+
+All metric functions are pure (tibble in, tibble out) and can be used
+outside the dashboard:
+
+```{r eval=FALSE}
+config <- dashboard_config()
+df <- get_audit_data(config)
+
+# Compute URR achievement by centre
+urr <- compute_urr_achievement(df)
+
+# Create caterpillar plot
+plot_caterpillar_proportion(urr, target = 0.65)
+```

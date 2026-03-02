@@ -1,0 +1,11 @@
+metric_id,metric_name,domain,lower,upper,unit,description
+urr_pct,URR >65%,Dialysis,65,NA,%,Urea reduction ratio achievement
+pre_bp,Pre-HD BP <140/90,BP,NA,NA,mmHg,Pre-dialysis blood pressure target
+post_bp,Post-HD BP <130/80,BP,NA,NA,mmHg,Post-dialysis blood pressure target
+phosphate,Phosphate in range,Biochemistry,1.1,1.7,mmol/L,Serum phosphate target
+adj_calcium,Adj. Calcium in range,Biochemistry,2.2,2.5,mmol/L,Adjusted calcium target
+pth,PTH in range,Biochemistry,16,72,pmol/L,Parathyroid hormone target
+potassium,Potassium in range,Bicarbonate,4,6,mmol/L,Serum potassium target
+bicarbonate,Bicarbonate in range,Bicarbonate,18,26,mmol/L,Serum bicarbonate target
+hb_range,Hb 10-12 g/dL,Anaemia,100,120,g/L,Haemoglobin target range
+ferritin,Ferritin >=200,Anaemia,200,NA,ug/L,Ferritin sufficiency

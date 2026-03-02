@@ -1,0 +1,93 @@
+---
+title: "Metric Definitions"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Metric Definitions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+## Clinical Metrics
+
+The IKDDS haemodialysis audit reports 23 metrics across 7 clinical
+domains. This document defines each metric, its target, and the
+REDCap field(s) used.
+
+### 1. Demographics
+
+| # | Metric | Function | Fields |
+|---|--------|----------|--------|
+| 1 | Patient counts | `compute_patient_counts()` | centre_code |
+| 2 | Age distribution | `compute_age_distribution()` | age |
+| 3 | Gender breakdown | `compute_gender_breakdown()` | gender |
+
+### 2. Primary Renal Diagnosis (PRD)
+
+| # | Metric | Function | Fields |
+|---|--------|----------|--------|
+| 4 | ERA classification | `compute_prd_proportions()` | dxs01 |
+
+### 3. Dialysis Adequacy
+
+| # | Metric | Target | Function | Fields |
+|---|--------|--------|----------|--------|
+| 5 | URR median | — | `compute_urr_median()` | qblg9 |
+| 6 | URR >65% | >65% | `compute_urr_achievement()` | qblg9 |
+| 7 | Session frequency | 3x/wk | `compute_session_frequency()` | hdp01 |
+| 8 | Session duration | — | `compute_session_duration()` | hdp02 |
+
+### 4. Blood Pressure
+
+| # | Metric | Target | Function | Fields |
+|---|--------|--------|----------|--------|
+| 9 | Pre-HD BP | <140/90 | `compute_pre_bp_achievement()` | qblg3, qblg4 |
+| 10 | Post-HD BP | <130/80 | `compute_post_bp_achievement()` | qblg6, qblg7 |
+
+### 5. Biochemistry (CKD-MBD)
+
+| # | Metric | Target | Function | Fields |
+|---|--------|--------|----------|--------|
+| 11 | Phosphate | 1.1-1.7 mmol/L | `compute_phosphate_achievement()` | qblb1 |
+| 12 | Adj. Calcium | 2.2-2.5 mmol/L | `compute_calcium_achievement()` | qblb4 |
+| 13 | PTH | 16-72 pmol/L | `compute_pth_achievement()` | qblb9 |
+| 14 | Simultaneous control | All 3 in range | `compute_ckd_mbd_simultaneous()` | qblb1, qblb4, qblb9 |
+
+### 6. Bicarbonate & Potassium
+
+| # | Metric | Target | Function | Fields |
+|---|--------|--------|----------|--------|
+| 15 | Potassium | 4-6 mmol/L | `compute_potassium_achievement()` | qbla9 |
+| 16 | Bicarbonate | 18-26 mmol/L | `compute_bicarbonate_achievement()` | qbla4 |
+
+### 7. Anaemia
+
+| # | Metric | Target | Function | Fields |
+|---|--------|--------|----------|--------|
+| 17 | Hb median | — | `compute_hb_median()` | qble1 |
+| 18 | Hb 10-12 g/dL | 100-120 g/L | `compute_hb_achievement()` | qble1 |
+| 19 | Hb distribution | — | `compute_hb_distribution()` | qble1 |
+| 20 | Ferritin >=200 | >=200 ug/L | `compute_ferritin_achievement()` | qblf1 |
+
+### 8. Vascular Access
+
+| # | Metric | Function | Fields |
+|---|--------|----------|--------|
+| 21-23 | AVF/AVG/Catheter | `compute_access_distribution()` | qhd20 |
+
+## Statistical Methods
+
+### Wilson Score Confidence Intervals
+
+All proportion CIs use the Wilson score method via `wilson_ci()`,
+which provides better coverage than the normal approximation for
+small samples.
+
+### Spiegelhalter Funnel Plots
+
+Funnel plots use exact binomial control limits (2-sigma = 95%,
+3-sigma = 99.7%) via `funnel_limits()`, following the UK Renal
+Registry methodology.

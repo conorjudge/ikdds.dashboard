@@ -1,0 +1,42 @@
+code,group,description
+10,Glomerulonephritis,Focal segmental glomerulosclerosis (FSGS)
+11,Glomerulonephritis,IgA nephropathy
+12,Glomerulonephritis,Membranous nephropathy
+13,Glomerulonephritis,Membranoproliferative GN Type I
+14,Glomerulonephritis,Dense deposit disease
+15,Glomerulonephritis,Crescentic GN Type III
+16,Glomerulonephritis,Other histologically examined GN
+17,Glomerulonephritis,GN not examined histologically
+19,Glomerulonephritis,Glomerulonephritis unspecified
+20,Pyelonephritis,Pyelonephritis due to vesicoureteric reflux
+21,Pyelonephritis,Pyelonephritis due to urinary tract obstruction
+29,Pyelonephritis,Pyelonephritis unspecified
+30,Interstitial nephritis,Interstitial nephritis due to analgesic drugs
+31,Interstitial nephritis,Interstitial nephritis due to other drugs
+39,Interstitial nephritis,Interstitial nephritis unspecified
+40,Cystic kidney disease,Autosomal dominant polycystic kidney disease (ADPKD)
+41,Cystic kidney disease,Nephronophthisis
+49,Cystic kidney disease,Cystic kidney disease unspecified
+50,Hereditary nephropathy,Alport syndrome
+59,Hereditary nephropathy,Hereditary nephropathy unspecified
+60,Systemic disease,Lupus erythematosus
+63,Systemic disease,Henoch-Schoenlein purpura
+64,Systemic disease,Diabetic nephropathy Type 1
+65,Systemic disease,Amyloid
+66,Systemic disease,Myelomatosis/light chain deposit disease
+70,Systemic disease,Wegener granulomatosis
+71,Systemic disease,Polyarteritis nodosa
+72,Systemic disease,Diabetic nephropathy Type 2
+73,Systemic disease,Scleroderma
+74,Systemic disease,Haemolytic uraemic syndrome
+79,Systemic disease,Other systemic disease
+80,Vascular disease,Renal vascular disease due to malignant hypertension
+81,Vascular disease,Renal vascular disease due to hypertension
+82,Vascular disease,Renal vascular disease due to polyarteritis
+84,Vascular disease,Ischaemic renal disease/cholesterol embolism
+89,Vascular disease,Renal vascular disease unspecified
+00,Uncertain,Chronic renal failure aetiology uncertain
+92,Miscellaneous,Tubular necrosis (irreversible)
+93,Miscellaneous,Kidney tumour
+95,Miscellaneous,Balkan nephropathy
+99,Miscellaneous,Other identified renal disorder

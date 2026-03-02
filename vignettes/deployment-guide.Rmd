@@ -1,0 +1,73 @@
+---
+title: "Deployment Guide"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Deployment Guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+## Local Development
+
+### Prerequisites
+
+- R >= 4.1.0
+- RStudio (recommended)
+- Required packages: `shiny`, `bslib`, `ggplot2`, `plotly`, `DT`, `dplyr`
+
+### Install from Source
+
+```{r eval=FALSE}
+devtools::install("ikdds_dashboard/ikdds.dashboard")
+```
+### Run Locally
+
+```{r eval=FALSE}
+library(ikdds.dashboard)
+run_app()
+```
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `IKDDS_DASH_DATA_SOURCE` | `synthetic` | `synthetic` or `redcap` |
+| `IKDDS_REDCAP_URI` | — | REDCap API endpoint |
+| `IKDDS_REDCAP_TOKEN` | — | REDCap API token |
+| `IKDDS_DASH_CACHE_TTL` | `3600` | Cache TTL in seconds |
+| `IKDDS_DASH_TITLE` | `IKDDS Haemodialysis Audit Dashboard` | App title |
+| `IKDDS_DASH_DEBUG` | `false` | Enable debug mode |
+| `PORT` | `3838` | HTTP port |
+
+## Posit Connect Deployment
+
+1. Set environment variables in the Posit Connect admin panel
+2. Push via git or use `rsconnect::deployApp()`
+3. The `app.R` file at the package root serves as the entrypoint
+
+```{r eval=FALSE}
+rsconnect::deployApp(
+  appDir = "ikdds_dashboard/ikdds.dashboard",
+  appTitle = "IKDDS Haemodialysis Audit Dashboard"
+)
+```
+
+## Docker (Optional)
+
+```dockerfile
+FROM rocker/shiny:4.4.0
+RUN install2.r --error shiny bslib ggplot2 plotly DT dplyr tidyr
+COPY ikdds.dashboard /srv/shiny-server/ikdds.dashboard
+EXPOSE 3838
+```
+
+## Security Notes
+
+- REDCap tokens should be stored as environment variables, never in code
+- The dashboard does not write any data — it is read-only
+- Patient identifiers (record_id) are synthetic IDs, not real MRNs
+- In production, configure HTTPS via reverse proxy
