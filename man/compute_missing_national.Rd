@@ -17,6 +17,7 @@ Compute national missing data summary
 }
 \seealso{
 Other metrics-missing: 
-\code{\link{compute_missing_data}()}
+\code{\link{compute_missing_data}()},
+\code{\link{compute_unmapped_patients}()}
 }
 \concept{metrics-missing}

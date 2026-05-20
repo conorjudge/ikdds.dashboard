@@ -1,0 +1,186 @@
+---
+title: "Statistical Methods"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Statistical Methods}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+## Overview
+
+The IKDDS dashboard uses several statistical methods for centre
+comparison. This vignette demonstrates each method with worked
+examples using synthetic data.
+
+```{r}
+library(ikdds.dashboard)
+
+df <- generate_synthetic_data(seed = 42, n_total = 1200)
+```
+
+## Wilson Score Confidence Intervals
+
+For proportion-based metrics (e.g., "% of patients with URR >65%"),
+the dashboard uses Wilson score confidence intervals rather than the
+normal approximation. This provides better coverage for small samples
+and avoids intervals outside [0, 1].
+
+### The `wilson_ci()` Function
+
+```{r}
+# 15 out of 20 patients achieving target
+wilson_ci(k = 15, n = 20)
+```
+
+```{r}
+# Compare small vs large sample
+wilson_ci(k = 3, n = 5)    # Small sample — wide interval
+wilson_ci(k = 60, n = 100) # Large sample — narrow interval
+```
+
+### Applied to Centre Data
+
+```{r}
+# Compute URR achievement with CIs
+urr <- compute_urr_achievement(df)
+urr[, c("centre_code", "n", "in_target", "proportion", "lower", "upper")]
+```
+
+## Caterpillar Plots
+
+Caterpillar plots display centre-level results as ordered
+dot-and-whisker plots, with a national average reference line:
+
+```{r fig.height=4}
+urr <- compute_urr_achievement(df)
+plot_caterpillar_proportion(urr, target = 0.65)
+```
+
+### Median Caterpillar
+
+For continuous metrics like URR median:
+
+```{r fig.height=4}
+urr_med <- compute_urr_median(df)
+plot_caterpillar_median(urr_med)
+```
+
+## Spiegelhalter Funnel Plots
+
+Funnel plots show each centre plotted as sample size (x-axis) vs
+achievement rate (y-axis), with control limits based on expected
+binomial variation around the national mean.
+
+### The `funnel_limits()` Function
+
+```{r}
+# Compute funnel limits for a range of sample sizes
+limits <- funnel_limits(
+  p = 0.70,          # National proportion
+  n_range = c(20, 300)
+)
+head(limits)
+```
+
+### Applied to Metrics
+
+```{r fig.height=4}
+urr <- compute_urr_achievement(df)
+plot_funnel(urr)
+```
+
+Centres outside the 95% limits (solid lines) show more variation
+than expected by chance. Centres outside the 99.7% limits (dashed)
+are considered statistical outliers.
+
+## Suppression Engine
+
+The dashboard suppresses results for centres with fewer than 10
+patients to prevent identification risk:
+
+```{r}
+# Create a small test dataset
+small_df <- df[df$centre_code %in% c("BEA", "MAT"), ]
+
+# The engine pipeline handles suppression
+urr <- compute_urr_achievement(small_df)
+
+# Apply suppression (centres with n < 10 get NA values)
+suppressed <- apply_suppression(urr, min_n = 10)
+suppressed[, c("centre_code", "n", "proportion", "suppressed")]
+```
+
+## Completeness Labelling
+
+Centre labels are annotated with their data completeness rate.
+If completeness falls below 70%, a warning is added:
+
+```{r}
+urr <- compute_urr_achievement(df)
+labelled <- add_completeness_labels(urr, df, "qblg9")
+labelled[, c("centre_code", "n", "label")]
+```
+
+## Median Confidence Intervals
+
+For continuous metrics, the dashboard uses order-statistic CIs
+for the median via `median_ci()`:
+
+```{r}
+# Median CI for a sample
+set.seed(42)
+x <- rnorm(50, mean = 70, sd = 5)
+median_ci(x)
+```
+
+This uses the exact binomial method to find the order statistics
+that bound the 95% CI for the population median.
+
+## National Averages
+
+National averages are computed as weighted averages across centres:
+
+```{r}
+urr <- compute_urr_achievement(df)
+
+# Proportion: total events / total patients
+national_average_proportion(urr)
+
+# Median: sample-size-weighted mean of centre medians
+urr_med <- compute_urr_median(df)
+national_average_median(urr_med)
+```
+
+## Individual Patient QA Medians
+
+The Individual Patient QA page uses simpler inline computations
+rather than the metrics engine. For each of 11 continuous metrics,
+it computes:
+
+- **Patient value** — the individual patient's recorded result
+- **Centre median** — `median(x, na.rm = TRUE)` across all patients
+  at the same centre
+- **National median** — `median(x, na.rm = TRUE)` across all patients
+  nationally
+
+This direct approach avoids the suppression/completeness pipeline
+since the purpose is clinical QA rather than centre benchmarking.
+
+```{r}
+# Example: compute medians for URR
+centre_urr <- df$qblg9[df$centre_code == "BEA" & !is.na(df$qblg9)]
+national_urr <- df$qblg9[!is.na(df$qblg9)]
+
+cat("Centre median URR (BEA):", median(centre_urr), "\n")
+cat("National median URR:    ", median(national_urr), "\n")
+```

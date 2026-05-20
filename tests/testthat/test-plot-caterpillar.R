@@ -14,9 +14,9 @@ test_that("plot_caterpillar_proportion handles target line", {
   p <- plot_caterpillar_proportion(metric, target = 0.65)
 
   expect_s3_class(p, "ggplot")
-  # Should have a geom_vline layer for the target
+  # Should have a geom_hline layer for the target
   layer_classes <- vapply(p$layers, function(l) class(l$geom)[1], character(1))
-  expect_true("GeomVline" %in% layer_classes)
+  expect_true("GeomHline" %in% layer_classes)
 })
 
 test_that("plot_caterpillar_median returns ggplot", {

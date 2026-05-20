@@ -1,0 +1,139 @@
+---
+title: "Synthetic Data Generation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Synthetic Data Generation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Overview
+
+The `ikdds.dashboard` package includes a synthetic data generator that
+creates realistic haemodialysis patient data for development, testing,
+and demonstration. This vignette shows how to generate data, inspect
+its structure, and use it with the metric functions.
+
+## Generating Synthetic Data
+
+```{r}
+library(ikdds.dashboard)
+
+# Generate ~1,200 patients across 7 Irish renal centres
+df <- generate_synthetic_data(seed = 42, n_total = 1200)
+
+cat("Rows:", nrow(df), "\n")
+cat("Columns:", ncol(df), "\n")
+```
+
+## Data Structure
+
+Each row represents one patient in one audit period. Key columns:
+
+```{r}
+str(df[, c("record_id", "centre_code", "centre_name", "consultant",
+           "age", "gender")])
+```
+
+### Clinical Variables
+
+The dataset contains the REDCap field codes used by the IKDDS audit:
+
+```{r}
+# Dialysis adequacy
+summary(df$qblg9)  # URR (%)
+
+# Blood pressure
+summary(df[, c("qblg3", "qblg4", "qblg6", "qblg7")])
+```
+
+```{r}
+# Biochemistry
+summary(df[, c("qblb1", "qblb4", "qblb9")])  # PO4, Ca, PTH
+```
+
+```{r}
+# Anaemia
+summary(df[, c("qble1", "qblf1")])  # Hb, Ferritin
+```
+
+## Centre Distribution
+
+```{r}
+table(df$centre_code)
+```
+
+The 7 centres reflect the real Irish renal network:
+
+- **BEA** — Beaumont Hospital (Dublin, largest centre)
+- **MAT** — Mater Misericordiae University Hospital (Dublin)
+- **TAL** — Tallaght University Hospital (Dublin)
+- **STJ** — St. James's Hospital (Dublin)
+- **CUH** — Cork University Hospital (Munster)
+- **UHL** — University Hospital Limerick (Midwest)
+- **GUH** — Galway University Hospital (West)
+
+## Realistic Missing Data
+
+The generator introduces realistic patterns of missing data
+to simulate real-world data quality issues:
+
+```{r}
+# Missing data rates for key variables
+vars <- c("qblg9", "qblg3", "qblb1", "qblb4", "qblb9",
+          "qbla9", "qbla4", "qble1", "qblf1", "qhd20")
+missing_pct <- sapply(vars, function(v) {
+  round(mean(is.na(df[[v]])) * 100, 1)
+})
+data.frame(Variable = vars, Missing_Pct = missing_pct)
+```
+
+## Using with Metric Functions
+
+All metric compute functions accept the synthetic data directly:
+
+```{r}
+# Compute URR achievement by centre
+urr <- compute_urr_achievement(df)
+head(urr)
+```
+
+```{r}
+# Compute haemoglobin achievement
+hb <- compute_hb_achievement(df)
+head(hb)
+```
+
+```{r}
+# Compute missing data rates
+missing <- compute_missing_data(df)
+head(missing)
+```
+
+## Reproducibility
+
+Setting the seed ensures identical datasets across runs:
+
+```{r}
+df1 <- generate_synthetic_data(seed = 123, n_total = 100)
+df2 <- generate_synthetic_data(seed = 123, n_total = 100)
+identical(df1, df2)
+```
+
+## Exporting for Power BI
+
+The synthetic data can be exported as CSV for Power BI development:
+
+```{r eval=FALSE}
+readr::write_csv(df, "synthetic_audit_data.csv")
+```
+
+This is useful for the HSE IIS Power BI team to develop their
+dashboard against realistic test data.

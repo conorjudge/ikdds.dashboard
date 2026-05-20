@@ -16,17 +16,39 @@ app_ui <- function(config = dashboard_config()) {
         style = "margin-right: 10px;",
         onerror = "this.style.display='none'"
       ),
-      config$app_title
+      config$app_title,
+      shiny::uiOutput("role_indicator", inline = TRUE)
     ),
     id = "main_nav",
+    fillable = FALSE,
     theme = hse_theme(),
-    header = shiny::tags$head(
-      shiny::tags$link(rel = "stylesheet", href = "custom.css")
+    header = shiny::tagList(
+      shiny::tags$head(
+        shiny::tags$link(rel = "stylesheet", href = "custom.css")
+      ),
+      shiny::div(
+        class = "header-subtitle",
+        shiny::textOutput("filter_state", inline = TRUE),
+        shiny::uiOutput("filter_chips", inline = TRUE)
+      )
     ),
     sidebar = bslib::sidebar(
       title = "Filters",
       width = 250,
+      position = "right",
+      open = "desktop",
       mod_filters_ui("filters")
+    ),
+    footer = shiny::div(
+      class = "dashboard-footer",
+      shiny::div(
+        class = "footer-left",
+        shiny::textOutput("last_refreshed", inline = TRUE)
+      ),
+      shiny::div(
+        class = "footer-right",
+        "Data Source: IKDDS / HSE"
+      )
     ),
 
     bslib::nav_panel(
@@ -75,6 +97,31 @@ app_ui <- function(config = dashboard_config()) {
       mod_access_ui("access")
     ),
     bslib::nav_panel(
+      title = "Data Quality",
+      icon = shiny::icon("clipboard-check"),
+      mod_data_quality_ui("data_quality")
+    ),
+    bslib::nav_panel(
+      title = "Centre Profile",
+      icon = shiny::icon("building"),
+      mod_centre_profile_ui("centre_profile")
+    ),
+    bslib::nav_panel(
+      title = "Individual",
+      icon = shiny::icon("user"),
+      mod_individual_ui("individual")
+    ),
+    bslib::nav_panel(
+      title = "Working Groups",
+      icon = shiny::icon("people-group"),
+      mod_working_groups_ui("working_groups")
+    ),
+    bslib::nav_panel(
+      title = "Methods",
+      icon = shiny::icon("book"),
+      mod_methods_ui("methods")
+    ),
+    bslib::nav_panel(
       title = "Drill-down",
       icon = shiny::icon("table"),
       mod_drilldown_ui("drilldown")
@@ -88,4 +135,31 @@ app_ui <- function(config = dashboard_config()) {
       )
     )
   )
+}
+
+#' Page description block
+#'
+#' Creates a styled "About this page" description element.
+#'
+#' @param ... Content to display inside the description block.
+#'
+#' @return A [shiny::div()] with class `page-description`.
+#'
+#' @keywords internal
+page_description <- function(...) {
+  shiny::div(class = "page-description", ...)
+}
+
+#' Source footnote block
+#'
+#' Creates a styled footnote referencing clinical guideline sources.
+#'
+#' @param text Character string of the footnote text.
+#'
+#' @return A [shiny::div()] with class `source-footnote`.
+#'
+#' @export
+#' @family ui
+source_footnote <- function(text) {
+  shiny::div(class = "source-footnote", text)
 }

@@ -9,7 +9,9 @@ mock_dashboard_config <- function(data_source = "synthetic") {
     redcap_token = "FAKE_TOKEN_FOR_TESTING",
     cache_ttl    = 60L,
     app_title    = "Test Dashboard",
-    debug        = FALSE
+    debug        = FALSE,
+    user_role    = "admin",
+    user_centre  = ""
   )
   class(config) <- c("dashboard_config", "list")
   config
@@ -24,7 +26,9 @@ mock_dashboard_config_incomplete <- function() {
     redcap_token = "",
     cache_ttl    = 60L,
     app_title    = "Test Dashboard",
-    debug        = FALSE
+    debug        = FALSE,
+    user_role    = "admin",
+    user_centre  = ""
   )
   class(config) <- c("dashboard_config", "list")
   config

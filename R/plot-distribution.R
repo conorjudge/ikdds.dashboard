@@ -24,7 +24,7 @@ plot_distribution <- function(df, value_col, title = NULL,
   colours <- hse_colours()
 
   p <- ggplot2::ggplot(
-    df %>% dplyr::filter(!is.na(!!value_col)),
+    df |> dplyr::filter(!is.na(!!value_col)),
     ggplot2::aes(x = !!value_col)
   ) +
     ggplot2::geom_histogram(

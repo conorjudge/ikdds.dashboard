@@ -4,7 +4,7 @@
 \alias{mod_anaemia_server}
 \title{Anaemia module  - Server}
 \usage{
-mod_anaemia_server(id, filtered_data)
+mod_anaemia_server(id, filtered_data, compare_by = NULL)
 }
 \arguments{
 \item{id}{Module namespace ID.}
@@ -25,8 +25,12 @@ Other modules:
 \code{\link{mod_biochemistry_ui}()},
 \code{\link{mod_bp_server}()},
 \code{\link{mod_bp_ui}()},
+\code{\link{mod_centre_profile_server}()},
+\code{\link{mod_centre_profile_ui}()},
 \code{\link{mod_code_viewer_server}()},
 \code{\link{mod_code_viewer_ui}()},
+\code{\link{mod_data_quality_server}()},
+\code{\link{mod_data_quality_ui}()},
 \code{\link{mod_demographics_server}()},
 \code{\link{mod_demographics_ui}()},
 \code{\link{mod_dialysis_server}()},
@@ -35,9 +39,15 @@ Other modules:
 \code{\link{mod_drilldown_ui}()},
 \code{\link{mod_filters_server}()},
 \code{\link{mod_filters_ui}()},
+\code{\link{mod_individual_server}()},
+\code{\link{mod_individual_ui}()},
+\code{\link{mod_methods_server}()},
+\code{\link{mod_methods_ui}()},
 \code{\link{mod_overview_server}()},
 \code{\link{mod_overview_ui}()},
 \code{\link{mod_prd_server}()},
-\code{\link{mod_prd_ui}()}
+\code{\link{mod_prd_ui}()},
+\code{\link{mod_working_groups_server}()},
+\code{\link{mod_working_groups_ui}()}
 }
 \concept{modules}

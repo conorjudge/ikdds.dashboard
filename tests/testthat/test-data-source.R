@@ -28,7 +28,7 @@ test_that("validate_audit_data errors for missing columns", {
 
 test_that("audit_data_columns returns expected length", {
   cols <- audit_data_columns()
-  expect_equal(length(cols), 22)
+  expect_equal(length(cols), 28)
   expect_true("record_id" %in% cols)
   expect_true("qblg9" %in% cols)
 })

@@ -13,7 +13,8 @@ mod_overview_ui(id)
 A \code{\link[shiny:reexports]{shiny::tagList()}}.
 }
 \description{
-National summary landing page with KPI value boxes and summary table.
+National summary landing page with traffic light KPI value boxes,
+centre vs national comparison, and summary tables.
 }
 \seealso{
 Other modules: 
@@ -27,8 +28,12 @@ Other modules:
 \code{\link{mod_biochemistry_ui}()},
 \code{\link{mod_bp_server}()},
 \code{\link{mod_bp_ui}()},
+\code{\link{mod_centre_profile_server}()},
+\code{\link{mod_centre_profile_ui}()},
 \code{\link{mod_code_viewer_server}()},
 \code{\link{mod_code_viewer_ui}()},
+\code{\link{mod_data_quality_server}()},
+\code{\link{mod_data_quality_ui}()},
 \code{\link{mod_demographics_server}()},
 \code{\link{mod_demographics_ui}()},
 \code{\link{mod_dialysis_server}()},
@@ -37,8 +42,14 @@ Other modules:
 \code{\link{mod_drilldown_ui}()},
 \code{\link{mod_filters_server}()},
 \code{\link{mod_filters_ui}()},
+\code{\link{mod_individual_server}()},
+\code{\link{mod_individual_ui}()},
+\code{\link{mod_methods_server}()},
+\code{\link{mod_methods_ui}()},
 \code{\link{mod_overview_server}()},
 \code{\link{mod_prd_server}()},
-\code{\link{mod_prd_ui}()}
+\code{\link{mod_prd_ui}()},
+\code{\link{mod_working_groups_server}()},
+\code{\link{mod_working_groups_ui}()}
 }
 \concept{modules}

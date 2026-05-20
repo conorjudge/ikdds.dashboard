@@ -4,7 +4,6 @@
 ## usethis namespace: start
 #' @import shiny
 #' @import ggplot2
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data .env %||%
 #' @importFrom stats qnorm median sd quantile
 #' @importFrom dplyr mutate filter select group_by summarise ungroup
@@ -20,5 +19,6 @@
 #'   card card_header card_body value_box layout_columns sidebar
 #' @importFrom plotly ggplotly plotlyOutput renderPlotly event_data
 #' @importFrom readr read_csv
+#' @importFrom ggrepel geom_text_repel
 ## usethis namespace: end
 NULL

@@ -20,6 +20,7 @@ Compute session duration distribution by centre
 Other metrics-dialysis: 
 \code{\link{compute_session_frequency}()},
 \code{\link{compute_urr_achievement}()},
-\code{\link{compute_urr_median}()}
+\code{\link{compute_urr_median}()},
+\code{\link{validate_machine_fields}()}
 }
 \concept{metrics-dialysis}

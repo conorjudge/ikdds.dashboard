@@ -13,7 +13,7 @@
 #' @family plots
 hse_datatable <- function(df, caption = NULL, pageLength = 15,
                            scrollX = TRUE) {
-  DT::datatable(
+  dt <- DT::datatable(
     df,
     caption = caption,
     rownames = FALSE,
@@ -33,6 +33,18 @@ hse_datatable <- function(df, caption = NULL, pageLength = 15,
       )
     )
   )
+
+  # Add conditional formatting for suppressed rows
+  if ("suppressed" %in% names(df)) {
+    dt <- DT::formatStyle(
+      dt, "suppressed",
+      target = "row",
+      color = DT::styleEqual(c(TRUE, FALSE), c("#999999", "inherit")),
+      fontStyle = DT::styleEqual(c(TRUE, FALSE), c("italic", "normal"))
+    )
+  }
+
+  dt
 }
 
 #' Format percentage columns in DT

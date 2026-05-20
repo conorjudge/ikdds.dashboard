@@ -1,0 +1,189 @@
+---
+title: "Individual Patient QA"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Individual Patient QA}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+## Purpose
+
+The Individual Patient QA page enables nephrologists to compare a
+single patient's results against centre and national averages. This
+supports individual-level quality assurance to identify patients
+needing clinical attention, ultimately improving centre-level
+performance.
+
+## Workflow
+
+1. Select a **centre** from the dropdown
+2. Select a **patient** (record ID) — the list cascades from the
+   selected centre
+3. Click **Load Patient** to generate the comparison
+
+The page then displays:
+
+- **KPI boxes** — Patient ID, Centre, and Consultant
+- **Comparison table** — 11 metrics with patient value, centre median,
+  national median, target range, and RAG status
+- **Bullet chart** — Visual comparison of patient values against
+  centre and national medians
+
+## The 11 Metrics
+
+| Metric | REDCap Field | Target | Type |
+|--------|-------------|--------|------|
+| URR (%) | `qblg9` | >65 | Greater than |
+| Pre SBP | `qblg3` | <140 | Less than |
+| Pre DBP | `qblg4` | <90 | Less than |
+| Post SBP | `qblg6` | <130 | Less than |
+| Post DBP | `qblg7` | <80 | Less than |
+| PO4 (mmol/L) | `qblb1` | 1.1-1.7 | Range |
+| Ca (mmol/L) | `qblb4` | 2.2-2.5 | Range |
+| PTH (pmol/L) | `qblb9` | 16-72 | Range |
+| K+ (mmol/L) | `qbla9` | 4-6 | Range |
+| HCO3 (mmol/L) | `qbla4` | 18-26 | Range |
+| Hb (g/dL) | `qble1` | 10-12 | Range |
+
+## RAG Status Logic
+
+Each metric is classified using a simple target-checking function:
+
+- **In range** (green) — patient value meets the target criterion
+- **Out of range** (red, bold) — patient value is outside the target
+- **Missing** (grey) — no value recorded for this patient
+
+```{r}
+library(ikdds.dashboard)
+
+df <- generate_synthetic_data(seed = 42, n_total = 1200)
+
+# Pick a patient from Beaumont
+bea_patients <- df[df$centre_code == "BEA", ]
+patient <- bea_patients[1, ]
+
+cat("Patient:", patient$record_id, "\n")
+cat("Centre:", patient$centre_code, "\n")
+cat("Consultant:", patient$consultant, "\n")
+```
+
+## Computing Comparisons
+
+The module uses simple `median()` calls — no dependency on the
+metrics engine:
+
+```{r}
+# Centre medians (Beaumont)
+centre_df <- df[df$centre_code == "BEA", ]
+
+# National medians (all centres)
+national_df <- df
+
+# Build comparison for one metric: URR
+patient_urr <- patient$qblg9
+centre_urr <- median(centre_df$qblg9, na.rm = TRUE)
+national_urr <- median(national_df$qblg9, na.rm = TRUE)
+
+cat("Patient URR:", round(patient_urr, 1), "\n")
+cat("Centre median URR:", round(centre_urr, 1), "\n")
+cat("National median URR:", round(national_urr, 1), "\n")
+cat("Target: >65\n")
+cat("Status:", ifelse(is.na(patient_urr), "Missing",
+                       ifelse(patient_urr > 65, "In range", "Out of range")), "\n")
+```
+
+## Building the Full Comparison Table
+
+Here is how the module builds the comparison for all 11 metrics:
+
+```{r}
+metric_defs <- list(
+  list(label = "URR (%)",      col = "qblg9", lo = 65,   hi = Inf,  op = "gt"),
+  list(label = "Pre SBP",      col = "qblg3", lo = -Inf, hi = 140,  op = "lt"),
+  list(label = "Pre DBP",      col = "qblg4", lo = -Inf, hi = 90,   op = "lt"),
+  list(label = "Post SBP",     col = "qblg6", lo = -Inf, hi = 130,  op = "lt"),
+  list(label = "Post DBP",     col = "qblg7", lo = -Inf, hi = 80,   op = "lt"),
+  list(label = "PO4 (mmol/L)", col = "qblb1", lo = 1.1,  hi = 1.7,  op = "range"),
+  list(label = "Ca (mmol/L)",  col = "qblb4", lo = 2.2,  hi = 2.5,  op = "range"),
+  list(label = "PTH (pmol/L)", col = "qblb9", lo = 16,   hi = 72,   op = "range"),
+  list(label = "K+ (mmol/L)",  col = "qbla9", lo = 4,    hi = 6,    op = "range"),
+  list(label = "HCO3 (mmol/L)",col = "qbla4", lo = 18,   hi = 26,   op = "range"),
+  list(label = "Hb (g/dL)",    col = "qble1", lo = 10,   hi = 12,   op = "range")
+)
+
+in_target <- function(val, m) {
+  if (is.na(val)) return(NA)
+  switch(m$op,
+    gt    = val > m$lo,
+    lt    = val < m$hi,
+    range = val >= m$lo & val <= m$hi
+  )
+}
+
+format_target <- function(m) {
+  switch(m$op,
+    gt    = paste0(">", m$lo),
+    lt    = paste0("<", m$hi),
+    range = paste0(m$lo, "-", m$hi)
+  )
+}
+
+comparison <- do.call(rbind, lapply(metric_defs, function(m) {
+  pt_val <- patient[[m$col]]
+  centre_med <- median(centre_df[[m$col]], na.rm = TRUE)
+  national_med <- median(national_df[[m$col]], na.rm = TRUE)
+
+  status <- if (is.na(pt_val)) "Missing"
+            else if (in_target(pt_val, m)) "In range"
+            else "Out of range"
+
+  data.frame(
+    Metric = m$label,
+    Patient = round(pt_val, 1),
+    Centre_Median = round(centre_med, 1),
+    National_Median = round(national_med, 1),
+    Target = format_target(m),
+    Status = status,
+    stringsAsFactors = FALSE
+  )
+}))
+
+comparison
+```
+
+## Bullet Chart
+
+The bullet chart provides a visual comparison. For each metric with
+a non-missing patient value:
+
+- **Grey bar** (wide) — national median
+- **Teal bar** (narrow) — patient value
+- **Orange marker** — centre median
+- **Red marker** — national median
+
+This follows the same visual pattern as the Centre Profile bullet
+chart, adapted for individual patient data.
+
+## Clinical Use Case
+
+A nephrologist reviewing their centre's audit results can:
+
+1. Go to the **Individual** tab
+2. Select their centre and a specific patient
+3. Immediately see which metrics are out of range (red)
+4. Identify whether the patient is above or below centre norms
+5. Prioritise clinical interventions for that patient
+
+When aggregated across patients, this workflow helps identify
+systematic issues contributing to centre-level underperformance
+on specific metrics.

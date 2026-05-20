@@ -9,8 +9,8 @@
 #' @export
 #' @family plot-helpers
 national_average_proportion <- function(metric_df) {
-  total_x <- sum(metric_df$x)
-  total_n <- sum(metric_df$n)
+  total_x <- sum(metric_df$x, na.rm = TRUE)
+  total_n <- sum(metric_df$n, na.rm = TRUE)
   if (total_n == 0) return(NA_real_)
   total_x / total_n
 }
@@ -27,7 +27,9 @@ national_average_proportion <- function(metric_df) {
 #' @family plot-helpers
 national_average_median <- function(metric_df) {
   if (nrow(metric_df) == 0) return(NA_real_)
-  stats::weighted.mean(metric_df$median, metric_df$n, na.rm = TRUE)
+  valid <- !is.na(metric_df$median) & !is.na(metric_df$n)
+  if (!any(valid)) return(NA_real_)
+  stats::weighted.mean(metric_df$median[valid], metric_df$n[valid])
 }
 
 #' Order centres for caterpillar plot
@@ -41,7 +43,7 @@ national_average_median <- function(metric_df) {
 #'
 #' @keywords internal
 order_centres <- function(metric_df, value_col = "proportion") {
-  ordered <- metric_df %>%
+  ordered <- metric_df |>
     dplyr::arrange(.data[[value_col]])
 
   factor(metric_df$centre_code, levels = ordered$centre_code)

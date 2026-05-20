@@ -4,7 +4,13 @@
 \alias{compute_centre_median}
 \title{Compute centre-level median with CI}
 \usage{
-compute_centre_median(df, value_col, metric_label = "Metric")
+compute_centre_median(
+  df,
+  value_col,
+  metric_label = "Metric",
+  group_col = "centre_code",
+  group_label_col = "centre_name"
+)
 }
 \arguments{
 \item{df}{Audit data tibble.}
@@ -12,13 +18,20 @@ compute_centre_median(df, value_col, metric_label = "Metric")
 \item{value_col}{Unquoted column name of the numeric value.}
 
 \item{metric_label}{Human-readable label for the metric.}
+
+\item{group_col}{Character name of the grouping column
+(default \code{"centre_code"}). Use \code{"consultant"} for consultant-level.}
+
+\item{group_label_col}{Character name of the display label column
+(default \code{"centre_name"}). Use \code{"consultant"} when grouping by consultant.}
 }
 \value{
-A tibble with columns: \code{centre_code}, \code{centre_name}, \code{n},
+A tibble with columns: group key, label, \code{n},
 \code{median}, \code{lower_ci}, \code{upper_ci}, \code{metric}.
 }
 \description{
-Wrapper that groups audit data by centre and returns median with CI.
+Wrapper that groups audit data by centre (or consultant) and returns
+median with CI.
 }
 \seealso{
 Other metrics-helpers: 

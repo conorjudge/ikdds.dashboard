@@ -4,12 +4,14 @@
 \alias{compute_urr_median}
 \title{Compute URR median by centre}
 \usage{
-compute_urr_median(df, filter_3x = FALSE)
+compute_urr_median(df, filter_3x = FALSE, group_col = "centre_code")
 }
 \arguments{
 \item{df}{Audit data tibble.}
 
 \item{filter_3x}{If \code{TRUE}, only include patients on 3x/week HD.}
+
+\item{group_col}{Grouping column: \code{"centre_code"} or \code{"consultant"}.}
 }
 \value{
 A tibble from \code{\link[=compute_centre_median]{compute_centre_median()}}.
@@ -21,6 +23,7 @@ Compute URR median by centre
 Other metrics-dialysis: 
 \code{\link{compute_session_duration}()},
 \code{\link{compute_session_frequency}()},
-\code{\link{compute_urr_achievement}()}
+\code{\link{compute_urr_achievement}()},
+\code{\link{validate_machine_fields}()}
 }
 \concept{metrics-dialysis}

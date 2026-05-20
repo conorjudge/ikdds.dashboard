@@ -11,7 +11,7 @@ test_that("compute_pre_bp_achievement works correctly", {
   # BEA: patients have SBP 135, 150, 128 and DBP 80, 95, 75
 
   # <140/90: patient 1 (135/80) and patient 3 (128/75) = 2/3
-  bea <- result %>% dplyr::filter(.data$centre_code == "BEA")
+  bea <- result |> dplyr::filter(.data$centre_code == "BEA")
   expect_equal(round(bea$proportion, 4), round(2/3, 4))
 })
 

@@ -141,78 +141,134 @@ funnel_limits <- function(target_rate, n_range) {
 
 #' Compute centre-level proportion with Wilson CI
 #'
-#' Wrapper that groups audit data by centre, counts successes, and returns
-#' a tibble with Wilson score CIs ready for caterpillar/funnel plotting.
+#' Wrapper that groups audit data by centre (or consultant), counts successes,
+#' and returns a tibble with Wilson score CIs ready for caterpillar/funnel
+#' plotting.
 #'
 #' @param df Audit data tibble.
 #' @param value_col Unquoted column name of the numeric value.
 #' @param lower Lower bound of target range.
 #' @param upper Upper bound of target range.
 #' @param metric_label Human-readable label for the metric.
+#' @param group_col Character name of the grouping column
+#'   (default `"centre_code"`). Use `"consultant"` for consultant-level.
+#' @param group_label_col Character name of the display label column
+#'   (default `"centre_name"`). Use `"consultant"` when grouping by consultant.
 #'
-#' @return A tibble with columns: `centre_code`, `centre_name`, `n`, `x`,
+#' @return A tibble with columns: group key, label, `n`, `x`,
 #'   `proportion`, `lower_ci`, `upper_ci`, `metric`.
 #'
 #' @export
 #' @family metrics-helpers
 compute_centre_proportion <- function(df, value_col, lower = -Inf, upper = Inf,
-                                       metric_label = "Metric") {
+                                       metric_label = "Metric",
+                                       group_col = "centre_code",
+                                       group_label_col = "centre_name") {
   value_col <- rlang::enquo(value_col)
 
-  result <- df %>%
-    dplyr::filter(!is.na(!!value_col)) %>%
-    dplyr::group_by(.data$centre_code, .data$centre_name) %>%
+  # Build grouping columns
+  if (group_col == "consultant") {
+    group_label_col <- "consultant"
+    grp_vars <- "consultant"
+  } else if (group_col == "region") {
+    group_label_col <- "region"
+    grp_vars <- "region"
+  } else {
+    grp_vars <- c(group_col, group_label_col)
+  }
+
+  result <- df |>
+    dplyr::filter(!is.na(!!value_col)) |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(grp_vars))) |>
     dplyr::summarise(
       n = dplyr::n(),
       x = sum(!!value_col >= lower & !!value_col <= upper),
       .groups = "drop"
-    ) %>%
-    dplyr::rowwise() %>%
+    ) |>
+    dplyr::rowwise() |>
     dplyr::mutate(
       ci = list(wilson_ci(.data$x, .data$n)),
       proportion = .data$ci$estimate,
       lower_ci = .data$ci$lower,
       upper_ci = .data$ci$upper
-    ) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(-"ci") %>%
+    ) |>
+    dplyr::ungroup() |>
+    dplyr::select(-"ci") |>
     dplyr::mutate(metric = metric_label)
+
+  # For non-centre grouping, add centre_code/centre_name aliases for plot compatibility
+  if (group_col == "consultant") {
+    result$centre_code <- result$consultant
+    result$centre_name <- result$consultant
+  } else if (group_col == "region") {
+    result$centre_code <- result$region
+    result$centre_name <- result$region
+  }
 
   result
 }
 
 #' Compute centre-level median with CI
 #'
-#' Wrapper that groups audit data by centre and returns median with CI.
+#' Wrapper that groups audit data by centre (or consultant) and returns
+#' median with CI.
 #'
 #' @param df Audit data tibble.
 #' @param value_col Unquoted column name of the numeric value.
 #' @param metric_label Human-readable label for the metric.
+#' @param group_col Character name of the grouping column
+#'   (default `"centre_code"`). Use `"consultant"` for consultant-level.
+#' @param group_label_col Character name of the display label column
+#'   (default `"centre_name"`). Use `"consultant"` when grouping by consultant.
 #'
-#' @return A tibble with columns: `centre_code`, `centre_name`, `n`,
+#' @return A tibble with columns: group key, label, `n`,
 #'   `median`, `lower_ci`, `upper_ci`, `metric`.
 #'
 #' @export
 #' @family metrics-helpers
-compute_centre_median <- function(df, value_col, metric_label = "Metric") {
+compute_centre_median <- function(df, value_col, metric_label = "Metric",
+                                   group_col = "centre_code",
+                                   group_label_col = "centre_name") {
   value_col <- rlang::enquo(value_col)
 
-  df %>%
-    dplyr::filter(!is.na(!!value_col)) %>%
-    dplyr::group_by(.data$centre_code, .data$centre_name) %>%
+  # Build grouping columns
+  if (group_col == "consultant") {
+    group_label_col <- "consultant"
+    grp_vars <- "consultant"
+  } else if (group_col == "region") {
+    group_label_col <- "region"
+    grp_vars <- "region"
+  } else {
+    grp_vars <- c(group_col, group_label_col)
+  }
+
+  result <- df |>
+    dplyr::filter(!is.na(!!value_col)) |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(grp_vars))) |>
     dplyr::summarise(
       n = dplyr::n(),
       values = list(!!value_col),
       .groups = "drop"
-    ) %>%
-    dplyr::rowwise() %>%
+    ) |>
+    dplyr::rowwise() |>
     dplyr::mutate(
       ci = list(median_ci(.data$values)),
       median = .data$ci$estimate,
       lower_ci = .data$ci$lower,
       upper_ci = .data$ci$upper
-    ) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(-"values", -"ci") %>%
+    ) |>
+    dplyr::ungroup() |>
+    dplyr::select(-"values", -"ci") |>
     dplyr::mutate(metric = metric_label)
+
+  # For non-centre grouping, add centre_code/centre_name aliases for plot compatibility
+  if (group_col == "consultant") {
+    result$centre_code <- result$consultant
+    result$centre_name <- result$consultant
+  } else if (group_col == "region") {
+    result$centre_code <- result$region
+    result$centre_name <- result$region
+  }
+
+  result
 }

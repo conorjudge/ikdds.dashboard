@@ -35,7 +35,9 @@ dashboard_config <- function(env = NULL) {
     redcap_token  = get_var("IKDDS_REDCAP_TOKEN", ""),
     cache_ttl     = as.integer(get_var("IKDDS_DASH_CACHE_TTL", "3600")),
     app_title     = get_var("IKDDS_DASH_TITLE", "IKDDS Haemodialysis Audit Dashboard"),
-    debug         = identical(tolower(get_var("IKDDS_DASH_DEBUG", "false")), "true")
+    debug         = identical(tolower(get_var("IKDDS_DASH_DEBUG", "false")), "true"),
+    user_role     = tolower(get_var("IKDDS_DASH_USER_ROLE", "admin")),
+    user_centre   = get_var("IKDDS_DASH_USER_CENTRE", "")
   )
 
   class(config) <- c("dashboard_config", "list")

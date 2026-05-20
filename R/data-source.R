@@ -40,10 +40,12 @@ get_audit_data <- function(config) {
 #'
 #' @keywords internal
 audit_data_columns <- function() {
-  c("record_id", "centre_code", "centre_name", "consultant", "age",
-    "gender", "dxs01", "qblg9", "hdp01", "hdp02", "qblg3", "qblg4",
-    "qblg6", "qblg7", "qblb1", "qblb4", "qblb9", "qbla9", "qbla4",
-    "qble1", "qblf1", "qhd20")
+  c("record_id", "centre_code", "centre_name", "region",
+    "unit_code", "unit_name", "unit_type",
+    "consultant", "is_acute", "age",
+    "gender", "ethnicity", "dxs01", "qblg9", "hdp01", "hdp02",
+    "qblg3", "qblg4", "qblg6", "qblg7", "qblb1", "qblb4", "qblb9",
+    "qbla9", "qbla4", "qble1", "qblf1", "qhd20")
 }
 
 #' Validate audit data structure

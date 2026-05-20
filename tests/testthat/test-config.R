@@ -4,7 +4,8 @@ test_that("dashboard_config returns expected structure", {
   config <- dashboard_config()
   expect_s3_class(config, "dashboard_config")
   expect_true(all(c("data_source", "redcap_uri", "redcap_token",
-                     "cache_ttl", "app_title", "debug") %in% names(config)))
+                     "cache_ttl", "app_title", "debug",
+                     "user_role", "user_centre") %in% names(config)))
 })
 
 test_that("dashboard_config defaults to synthetic data source", {

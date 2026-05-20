@@ -9,7 +9,9 @@ compute_centre_proportion(
   value_col,
   lower = -Inf,
   upper = Inf,
-  metric_label = "Metric"
+  metric_label = "Metric",
+  group_col = "centre_code",
+  group_label_col = "centre_name"
 )
 }
 \arguments{
@@ -22,14 +24,21 @@ compute_centre_proportion(
 \item{upper}{Upper bound of target range.}
 
 \item{metric_label}{Human-readable label for the metric.}
+
+\item{group_col}{Character name of the grouping column
+(default \code{"centre_code"}). Use \code{"consultant"} for consultant-level.}
+
+\item{group_label_col}{Character name of the display label column
+(default \code{"centre_name"}). Use \code{"consultant"} when grouping by consultant.}
 }
 \value{
-A tibble with columns: \code{centre_code}, \code{centre_name}, \code{n}, \code{x},
+A tibble with columns: group key, label, \code{n}, \code{x},
 \code{proportion}, \code{lower_ci}, \code{upper_ci}, \code{metric}.
 }
 \description{
-Wrapper that groups audit data by centre, counts successes, and returns
-a tibble with Wilson score CIs ready for caterpillar/funnel plotting.
+Wrapper that groups audit data by centre (or consultant), counts successes,
+and returns a tibble with Wilson score CIs ready for caterpillar/funnel
+plotting.
 }
 \seealso{
 Other metrics-helpers: 

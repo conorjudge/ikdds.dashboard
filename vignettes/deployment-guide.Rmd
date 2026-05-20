@@ -17,19 +17,26 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 - R >= 4.1.0
 - RStudio (recommended)
-- Required packages: `shiny`, `bslib`, `ggplot2`, `plotly`, `DT`, `dplyr`
+- Required packages: `shiny`, `bslib`, `ggplot2`, `plotly`, `DT`, `dplyr`,
+  `tidyr`, `tibble`, `rlang`, `glue`, `cli`, `purrr`, `stringr`, `readr`,
+  `ggrepel`, `yaml`
 
 ### Install from Source
 
 ```{r eval=FALSE}
 devtools::install("ikdds_dashboard/ikdds.dashboard")
 ```
+
 ### Run Locally
 
 ```{r eval=FALSE}
 library(ikdds.dashboard)
 run_app()
 ```
+
+The dashboard launches with 14 pages covering all clinical domains plus
+data quality, centre profile, individual patient QA, methods, and
+drill-down views.
 
 ## Environment Variables
 
@@ -60,7 +67,8 @@ rsconnect::deployApp(
 
 ```dockerfile
 FROM rocker/shiny:4.4.0
-RUN install2.r --error shiny bslib ggplot2 plotly DT dplyr tidyr
+RUN install2.r --error shiny bslib ggplot2 plotly DT dplyr tidyr \
+    tibble rlang glue cli purrr stringr readr ggrepel yaml
 COPY ikdds.dashboard /srv/shiny-server/ikdds.dashboard
 EXPOSE 3838
 ```
@@ -69,5 +77,7 @@ EXPOSE 3838
 
 - REDCap tokens should be stored as environment variables, never in code
 - The dashboard does not write any data — it is read-only
-- Patient identifiers (record_id) are synthetic IDs, not real MRNs
+- Patient identifiers (`record_id`) are synthetic IDs, not real MRNs
+- The Individual Patient QA page displays individual patient values for
+  clinical QA purposes — ensure appropriate access controls in production
 - In production, configure HTTPS via reverse proxy

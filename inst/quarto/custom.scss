@@ -1,0 +1,75 @@
+/*-- scss:defaults --*/
+$primary:   #00617F;
+$secondary: #6C757D;
+$success:   #28A745;
+$info:      #17A2B8;
+$warning:   #FFC107;
+$danger:    #DC3545;
+$body-bg:   #F8F9FA;
+$body-color: #212529;
+$font-family-sans-serif: Arial, "Helvetica Neue", Helvetica, sans-serif;
+
+/*-- scss:rules --*/
+
+/* HSE teal navbar */
+.navbar {
+  background-color: #00617F !important;
+}
+.navbar .navbar-title-text a {
+  color: #FFFFFF !important;
+  font-weight: 700;
+}
+.navbar .nav-link {
+  color: rgba(255,255,255,0.85) !important;
+}
+.navbar .nav-link.active,
+.navbar .nav-link:hover {
+  color: #FFFFFF !important;
+  border-bottom: 2px solid #FFFFFF;
+}
+
+/* Value box overrides for HSE palette */
+.bslib-value-box.bg-primary,
+.bslib-value-box[data-bslib-value-box-color="primary"] {
+  background-color: #00617F !important;
+  color: #FFFFFF !important;
+}
+.bslib-value-box.bg-info,
+.bslib-value-box[data-bslib-value-box-color="info"] {
+  background-color: #4DA8C4 !important;
+  color: #FFFFFF !important;
+}
+.bslib-value-box.bg-success,
+.bslib-value-box[data-bslib-value-box-color="success"] {
+  background-color: #28A745 !important;
+  color: #FFFFFF !important;
+}
+
+/* Card styling */
+.card {
+  border: 1px solid #E9ECEF;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.card-header {
+  background-color: #FFFFFF;
+  border-bottom: 2px solid #00617F;
+  font-weight: 600;
+  color: #00617F;
+}
+
+/* Table styling */
+table {
+  font-size: 0.85rem;
+}
+table thead th {
+  background-color: #00617F;
+  color: #FFFFFF;
+  font-weight: 600;
+  padding: 0.5rem;
+}
+table tbody tr:nth-child(even) {
+  background-color: #F8F9FA;
+}
+table tbody td {
+  padding: 0.4rem 0.5rem;
+}

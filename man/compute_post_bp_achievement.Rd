@@ -4,10 +4,12 @@
 \alias{compute_post_bp_achievement}
 \title{Compute post-HD blood pressure achievement by centre}
 \usage{
-compute_post_bp_achievement(df)
+compute_post_bp_achievement(df, group_col = "centre_code")
 }
 \arguments{
 \item{df}{Audit data tibble.}
+
+\item{group_col}{Grouping column: \code{"centre_code"} or \code{"consultant"}.}
 }
 \value{
 A tibble from \code{\link[=compute_centre_proportion]{compute_centre_proportion()}} with Wilson CIs.

@@ -4,22 +4,25 @@
 \alias{generate_synthetic_data}
 \title{Generate synthetic audit data}
 \usage{
-generate_synthetic_data(seed = 42, n_total = 1200)
+generate_synthetic_data(seed = 42, n_total = 2000)
 }
 \arguments{
 \item{seed}{Random seed for reproducibility. Default \code{42}.}
 
-\item{n_total}{Approximate total number of patients. Default \code{1200}.}
+\item{n_total}{Approximate total number of patients. Default \code{2000}.}
 }
 \value{
 A tibble with one row per patient and columns matching REDCap
 field names used by the audit metrics.
 }
 \description{
-Creates a realistic synthetic dataset of ~1,200 in-centre haemodialysis
-patients across 7 Irish renal centres. Values are drawn from distributions
-calibrated to published UKRR/ERA-EDTA registry data with deliberate
-between-centre variation.
+Creates a realistic synthetic dataset of ~2,000 in-centre haemodialysis
+patients across 23 Irish dialysis centres (14 main renal centres and
+9 satellite units). Values are drawn from distributions calibrated to
+published UKRR/ERA-EDTA registry data with deliberate between-centre
+variation. Satellite units have fewer consultants, lower acute admission
+rates, and slightly better clinical parameters reflecting more stable
+patient populations.
 }
 \examples{
 df <- generate_synthetic_data(seed = 42, n_total = 100)

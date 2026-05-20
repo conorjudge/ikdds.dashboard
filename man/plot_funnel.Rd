@@ -26,6 +26,8 @@ A ggplot2 object.
 \description{
 Creates a Spiegelhalter-style funnel plot with 95\% and 99.7\% control
 limits, used by the UK Renal Registry for centre comparison.
+Style matches IKDDS audit report: open circle points, dark teal/purple
+funnel lines, orange solid national mean, legend at top.
 }
 \seealso{
 Other plots: 
@@ -35,6 +37,9 @@ Other plots:
 \code{\link{plot_bar}()},
 \code{\link{plot_caterpillar_median}()},
 \code{\link{plot_caterpillar_proportion}()},
-\code{\link{plot_distribution}()}
+\code{\link{plot_distribution}()},
+\code{\link{plot_radar_prd}()},
+\code{\link{plot_trend_line}()},
+\code{\link{trend_placeholder}()}
 }
 \concept{plots}

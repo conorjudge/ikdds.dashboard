@@ -19,6 +19,7 @@ Compute gender breakdown by centre
 \seealso{
 Other metrics-demographics: 
 \code{\link{compute_age_distribution}()},
+\code{\link{compute_ethnicity_breakdown}()},
 \code{\link{compute_patient_counts}()}
 }
 \concept{metrics-demographics}

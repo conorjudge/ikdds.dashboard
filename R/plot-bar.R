@@ -30,7 +30,8 @@ plot_bar <- function(df, x_col, y_col, fill_col,
     ggplot2::labs(title = title, x = NULL, y = y_label, fill = NULL) +
     hse_ggplot_theme() +
     ggplot2::theme(
-      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
+      plot.margin = ggplot2::margin(t = 10, r = 15, b = 60, l = 15),
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1, vjust = 1)
     )
 
   p

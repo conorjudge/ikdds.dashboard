@@ -14,8 +14,8 @@ test_that("compute_urr_median filters 3x/week correctly", {
   result_all <- compute_urr_median(df, filter_3x = FALSE)
   result_3x  <- compute_urr_median(df, filter_3x = TRUE)
 
-  mat_all <- result_all %>% dplyr::filter(.data$centre_code == "MAT")
-  mat_3x  <- result_3x %>% dplyr::filter(.data$centre_code == "MAT")
+  mat_all <- result_all |> dplyr::filter(.data$centre_code == "MAT")
+  mat_3x  <- result_3x |> dplyr::filter(.data$centre_code == "MAT")
 
   expect_equal(mat_all$n, 3)
   expect_equal(mat_3x$n, 2)  # one patient excluded

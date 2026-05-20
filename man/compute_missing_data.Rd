@@ -22,6 +22,7 @@ at each centre.
 }
 \seealso{
 Other metrics-missing: 
-\code{\link{compute_missing_national}()}
+\code{\link{compute_missing_national}()},
+\code{\link{compute_unmapped_patients}()}
 }
 \concept{metrics-missing}

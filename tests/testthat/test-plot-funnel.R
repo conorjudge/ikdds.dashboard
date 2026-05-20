@@ -14,11 +14,11 @@ test_that("plot_funnel includes ribbon layers for limits", {
   p <- plot_funnel(metric)
 
   layer_classes <- vapply(p$layers, function(l) class(l$geom)[1], character(1))
-  expect_true("GeomRibbon" %in% layer_classes)
+  expect_true("GeomLine" %in% layer_classes)
 })
 
 test_that("plot_funnel handles single centre", {
-  df <- fixture_audit_data_minimal() %>%
+  df <- fixture_audit_data_minimal() |>
     dplyr::filter(.data$centre_code == "BEA")
   metric <- compute_urr_achievement(df)
   p <- plot_funnel(metric)

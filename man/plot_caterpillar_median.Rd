@@ -7,8 +7,9 @@
 plot_caterpillar_median(
   metric_df,
   title = NULL,
-  x_label = "Value",
-  target = NULL
+  y_label = "Value",
+  target = NULL,
+  x_label = NULL
 )
 }
 \arguments{
@@ -16,7 +17,7 @@ plot_caterpillar_median(
 
 \item{title}{Plot title.}
 
-\item{x_label}{X-axis label.}
+\item{y_label}{Y-axis label.}
 
 \item{target}{Optional target value to show as reference line.}
 }
@@ -24,8 +25,8 @@ plot_caterpillar_median(
 A ggplot2 object.
 }
 \description{
-Creates an ordered dot-and-whisker plot showing centre medians
-with confidence intervals.
+Creates a vertical ordered dot-and-whisker plot showing centre medians
+with confidence intervals. Style matches IKDDS audit report.
 }
 \seealso{
 Other plots: 
@@ -35,6 +36,9 @@ Other plots:
 \code{\link{plot_bar}()},
 \code{\link{plot_caterpillar_proportion}()},
 \code{\link{plot_distribution}()},
-\code{\link{plot_funnel}()}
+\code{\link{plot_funnel}()},
+\code{\link{plot_radar_prd}()},
+\code{\link{plot_trend_line}()},
+\code{\link{trend_placeholder}()}
 }
 \concept{plots}

@@ -55,8 +55,8 @@ mod_drilldown_server <- function(id, filtered_data) {
 
     drilldown_data <- shiny::reactive({
       shiny::req(input$drilldown_centre)
-      filtered_data() %>%
-        dplyr::filter(.data$centre_code == input$drilldown_centre) %>%
+      filtered_data() |>
+        dplyr::filter(.data$centre_code == input$drilldown_centre) |>
         dplyr::select(
           `ID` = "record_id",
           `Centre` = "centre_code",

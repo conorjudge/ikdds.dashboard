@@ -34,8 +34,8 @@ get_redcap_audit_data <- function(config) {
   # Map REDCap fields to dashboard columns
   centres <- load_centres()
 
-  df <- raw %>%
-    dplyr::filter(!is.na(.data$record_id)) %>%
+  df <- raw |>
+    dplyr::filter(!is.na(.data$record_id)) |>
     dplyr::mutate(
       record_id   = as.character(.data$record_id),
       age         = calculate_age(.data$idn03),
@@ -61,9 +61,10 @@ get_redcap_audit_data <- function(config) {
       qble1       = safe_numeric(.data$qble1),
       qblf1       = safe_numeric(.data$qblf1),
       qhd20       = map_access_type(.data$qhd20)
-    ) %>%
+    ) |>
     dplyr::left_join(
-      centres %>% dplyr::select("centre_code", "centre_name"),
+      centres |> dplyr::select("centre_code", "centre_name", "region",
+                                "unit_code", "unit_name", "unit_type"),
       by = "centre_code"
     )
 
@@ -74,7 +75,7 @@ get_redcap_audit_data <- function(config) {
     df$consultant <- NA_character_
   }
 
-  df %>%
+  df |>
     dplyr::select(dplyr::all_of(audit_data_columns()))
 }
 

@@ -4,10 +4,12 @@
 \alias{compute_hb_median}
 \title{Compute haemoglobin median by centre}
 \usage{
-compute_hb_median(df)
+compute_hb_median(df, group_col = "centre_code")
 }
 \arguments{
 \item{df}{Audit data tibble.}
+
+\item{group_col}{Grouping column: \code{"centre_code"} or \code{"consultant"}.}
 }
 \value{
 A tibble from \code{\link[=compute_centre_median]{compute_centre_median()}}.

@@ -4,10 +4,12 @@
 \alias{compute_calcium_achievement}
 \title{Compute adjusted calcium in range by centre}
 \usage{
-compute_calcium_achievement(df)
+compute_calcium_achievement(df, group_col = "centre_code")
 }
 \arguments{
 \item{df}{Audit data tibble.}
+
+\item{group_col}{Grouping column: \code{"centre_code"} or \code{"consultant"}.}
 }
 \value{
 A tibble from \code{\link[=compute_centre_proportion]{compute_centre_proportion()}}.
@@ -17,6 +19,7 @@ Proportion with adjusted calcium 2.2-2.5 mmol/L.
 }
 \seealso{
 Other metrics-biochemistry: 
+\code{\link{compute_ca_po4_achievement}()},
 \code{\link{compute_ckd_mbd_simultaneous}()},
 \code{\link{compute_phosphate_achievement}()},
 \code{\link{compute_pth_achievement}()}

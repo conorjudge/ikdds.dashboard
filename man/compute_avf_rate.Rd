@@ -4,10 +4,12 @@
 \alias{compute_avf_rate}
 \title{Compute AVF rate by centre (for funnel plot)}
 \usage{
-compute_avf_rate(df)
+compute_avf_rate(df, group_col = "centre_code")
 }
 \arguments{
 \item{df}{Audit data tibble.}
+
+\item{group_col}{Grouping column: \code{"centre_code"} or \code{"consultant"}.}
 }
 \value{
 A tibble with Wilson CIs for AVF proportion.

@@ -1,0 +1,483 @@
+---
+title: "IKDDS Haemodialysis Audit Dashboard Mockup"
+subtitle: "Adults on in-centre haemodialysis (ICHD) in the Republic of Ireland"
+format:
+  html:
+    theme:
+      - cosmo
+      - custom.scss
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    number-sections: true
+    embed-resources: true
+    fig-align: center
+    fig-width: 16
+    fig-height: 10
+    fig-dpi: 96
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(rlang)
+library(cli)
+library(readr)
+library(knitr)
+
+# Load package
+pkg_root <- normalizePath(file.path(getwd(), "../.."), mustWork = FALSE)
+loaded <- FALSE
+if (requireNamespace("ikdds.dashboard", quietly = TRUE)) {
+  library(ikdds.dashboard)
+  loaded <- TRUE
+}
+if (!loaded && file.exists(file.path(pkg_root, "DESCRIPTION")) &&
+    requireNamespace("pkgload", quietly = TRUE)) {
+  loaded <- tryCatch({
+    pkgload::load_all(pkg_root)
+    TRUE
+  }, error = function(e) FALSE)
+}
+if (!loaded && file.exists(file.path(pkg_root, "R"))) {
+  r_files <- list.files(file.path(pkg_root, "R"), pattern = "\\.R$",
+                        full.names = TRUE)
+  priority <- c("theme", "config", "data-synthetic", "metrics-helpers",
+                "metrics-", "plot-helpers", "plot-")
+  ordered <- character()
+  for (p in priority) {
+    matched <- r_files[grepl(p, basename(r_files))]
+    ordered <- c(ordered, matched)
+  }
+  remaining <- setdiff(r_files, ordered)
+  remaining <- remaining[!grepl("^(mod-|app|run)", basename(remaining))]
+  for (f in c(ordered, remaining)) {
+    tryCatch(source(f, local = FALSE), error = function(e) {
+      message("Skipping ", basename(f), ": ", e$message)
+    })
+  }
+}
+
+df <- generate_synthetic_data(seed = 42, n_total = 1200)
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center"
+)
+```
+
+# Study Outcomes
+
+```{r}
+#| label: study-outcomes
+tibble::tibble(
+  Domain = c("Demographics", "Primary Renal Disease", "Dialysis Adequacy",
+             "CKD-MBD", "Anaemia", "Blood Pressure", "Vascular Access"),
+  Key_Measures = c("Age, sex",
+                   "PRD classification proportions",
+                   "URR, session frequency and duration",
+                   "Calcium, phosphate, PTH, potassium, bicarbonate",
+                   "Haemoglobin, ferritin",
+                   "Pre- and post-dialysis BP",
+                   "Access type and definitive access"),
+  Targets = c("N/A", "N/A", "URR >65%",
+              "Ca 2.2-2.5 mmol/L; Phos 1.1-1.7 mmol/L; PTH 16-72 pmol/L",
+              "Hb 10-12 g/dL; Ferritin >=200 ug/L",
+              "<140/90 pre; <130/80 post",
+              "AVF preferred where possible")
+) |>
+  knitr::kable(caption = "Summary of study outcomes and clinical targets")
+```
+
+# Demographics
+
+::: {.panel-tabset}
+
+## Patient Demographics
+
+```{r}
+#| label: demo-age-table
+compute_age_distribution(df)$summary |>
+  knitr::kable(digits = 1,
+               caption = "Age statistics by centre for prevalent HD patients")
+```
+
+```{r}
+#| label: demo-gender
+compute_gender_breakdown(df) |>
+  knitr::kable(digits = 1,
+               caption = "Gender breakdown by centre")
+```
+
+## Distribution of Centres
+
+```{r}
+#| label: demo-counts
+compute_patient_counts(df) |>
+  knitr::kable(caption = "Number of prevalent HD patients by centre at end of reporting period")
+```
+
+```{r}
+#| label: demo-age-bar
+#| fig-cap: "Age distribution of prevalent HD patients by centre"
+#| fig-height: 8
+age_data <- compute_age_distribution(df)
+plot_bar(age_data$bins, .data$centre_code, .data$pct, .data$age_band,
+         title = "Age Distribution by Centre", y_label = "Percentage (%)")
+```
+
+```{r}
+#| label: demo-gender-bar
+#| fig-cap: "Gender breakdown of prevalent HD patients by centre"
+#| fig-height: 8
+gender_data <- compute_gender_breakdown(df)
+plot_bar(gender_data, .data$centre_code, .data$pct, .data$gender,
+         title = "Gender Breakdown by Centre", y_label = "Percentage (%)")
+```
+
+:::
+
+# Primary Renal Diagnoses
+
+```{r}
+#| label: prd-national
+compute_prd_national(df) |>
+  knitr::kable(digits = 1,
+               caption = "National PRD distribution by ERA-EDTA classification")
+```
+
+```{r}
+#| label: prd-bar
+#| fig-cap: "Primary renal diagnosis distribution by centre (ERA-EDTA classification)"
+prd_data <- compute_prd_proportions(df)
+plot_bar(prd_data, .data$centre_code, .data$pct, .data$prd_group,
+         title = "PRD Distribution by Centre", position = "stack")
+```
+
+```{r}
+#| label: prd-centre
+compute_prd_proportions(df) |>
+  tidyr::pivot_wider(
+    id_cols = "prd_group",
+    names_from = "centre_code",
+    values_from = "pct",
+    values_fill = 0
+  ) |>
+  knitr::kable(digits = 1,
+               caption = "PRD group percentage by centre")
+```
+
+# Adequacy of dialysis in prevalent adult ICHD patients
+
+- Measure: Percentage of patients with URR >65%
+
+## Adequacy of dialysis among all prevalent ICHD patients
+
+```{r}
+#| label: dial-freq
+compute_session_frequency(df) |>
+  tidyr::pivot_wider(
+    id_cols = c("centre_code", "centre_name"),
+    names_from = "hd_freq",
+    values_from = "pct",
+    values_fill = 0
+  ) |>
+  knitr::kable(digits = 1,
+               caption = "Distribution of HD session frequency by centre (% of patients)")
+```
+
+```{r}
+#| label: dial-duration
+compute_session_duration(df) |>
+  tidyr::pivot_wider(
+    id_cols = c("centre_code", "centre_name"),
+    names_from = "duration_band",
+    values_from = "pct",
+    values_fill = 0
+  ) |>
+  knitr::kable(digits = 1,
+               caption = "Distribution of HD session duration by centre (% of patients)")
+```
+
+```{r}
+#| label: dial-urr-median
+#| fig-cap: "Median urea reduction ratio (URR) achieved in all prevalent adult HD patients by centre"
+compute_urr_median(df) |>
+  plot_caterpillar_median(x_label = "URR (%)")
+```
+
+```{r}
+#| label: dial-urr-achieve
+#| fig-cap: "Percentage of all prevalent HD patients with URR >65% by centre"
+compute_urr_achievement(df) |>
+  plot_caterpillar_proportion(target = 0.65)
+```
+
+```{r}
+#| label: dial-urr-funnel
+#| fig-cap: "Percentage of all prevalent HD patients with URR >65% by centre"
+compute_urr_achievement(df) |> plot_funnel()
+```
+
+## Adequacy of dialysis among prevalent ICHD patients dialysing three times per week
+
+```{r}
+#| label: dial-urr-median-3x
+#| fig-cap: "Median URR achieved in prevalent adult HD patients dialysing 3x/week by centre"
+compute_urr_median(df, filter_3x = TRUE) |>
+  plot_caterpillar_median(x_label = "URR (%)")
+```
+
+```{r}
+#| label: dial-urr-achieve-3x
+#| fig-cap: "Percentage of prevalent HD patients dialysing 3x/week with URR >65% by centre"
+compute_urr_achievement(df, filter_3x = TRUE) |>
+  plot_caterpillar_proportion(target = 0.65)
+```
+
+```{r}
+#| label: dial-urr-funnel-3x
+#| fig-cap: "Percentage of prevalent HD patients dialysing 3x/week with URR >65% by centre"
+compute_urr_achievement(df, filter_3x = TRUE) |> plot_funnel()
+```
+
+# Blood Pressure
+
+- Measure: Proportion of patients with BP <140/90 (pre-dialysis) and/or <130/80 (post-dialysis)
+
+```{r}
+#| label: bp-summary
+compute_bp_summary(df) |>
+  knitr::kable(digits = 1,
+               caption = "Blood pressure summary for prevalent patients on HD by centre")
+```
+
+```{r}
+#| label: bp-caterpillar
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with BP <140/90 (pre-HD) and/or <130/80 (post-HD)"
+#| fig-height: 12
+pre <- compute_pre_bp_achievement(df)
+post <- compute_post_bp_achievement(df)
+
+p1 <- plot_caterpillar_proportion(pre, title = "Pre-HD BP <140/90")
+p2 <- plot_caterpillar_proportion(post, title = "Post-HD BP <130/80")
+
+if (requireNamespace("patchwork", quietly = TRUE)) {
+  patchwork::wrap_plots(p1, p2, ncol = 1)
+} else {
+  print(p1)
+  print(p2)
+}
+```
+
+```{r}
+#| label: bp-funnel-pre
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with BP <140/90 (pre-HD) by centre"
+compute_pre_bp_achievement(df) |> plot_funnel()
+```
+
+```{r}
+#| label: bp-funnel-post
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with BP <130/80 (post-HD) by centre"
+compute_post_bp_achievement(df) |> plot_funnel()
+```
+
+# Biochemistry parameters in prevalent adult ICHD patients
+
+## Serum Phosphate
+
+```{r}
+#| label: bio-po4-caterpillar
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with Serum Phosphate 1.1-1.7 mmol/L by centre. CI - confidence interval"
+compute_phosphate_achievement(df) |> plot_caterpillar_proportion()
+```
+
+```{r}
+#| label: bio-po4-funnel
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with Serum Phosphate 1.1-1.7 mmol/L by centre"
+compute_phosphate_achievement(df) |> plot_funnel()
+```
+
+## Adjusted Calcium
+
+```{r}
+#| label: bio-ca-caterpillar
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with adjusted calcium (Ca) 2.2-2.5 mmol/L by centre. CI - confidence interval"
+compute_calcium_achievement(df) |> plot_caterpillar_proportion()
+```
+
+```{r}
+#| label: bio-ca-funnel
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with adjusted calcium (Ca) 2.2-2.5 mmol/L by centre"
+compute_calcium_achievement(df) |> plot_funnel()
+```
+
+## Parathyroid Hormone (PTH)
+
+```{r}
+#| label: bio-pth-caterpillar
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with PTH 16-72 pmol/L by centre. CI - confidence interval"
+compute_pth_achievement(df) |> plot_caterpillar_proportion()
+```
+
+```{r}
+#| label: bio-pth-funnel
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with PTH 16-72 pmol/L by centre"
+compute_pth_achievement(df) |> plot_funnel()
+```
+
+## Simultaneous control of adjusted calcium, phosphate and PTH
+
+```{r}
+#| label: bio-mbd-caterpillar
+#| fig-cap: "Percentage of adult patients prevalent to ICHD achieving simultaneous control of all three CKD-MBD targets"
+compute_ckd_mbd_simultaneous(df) |> plot_caterpillar_proportion()
+```
+
+# Pre-dialysis Bicarbonate and Potassium in prevalent adult HD patients
+
+```{r}
+#| label: bk-k-caterpillar
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with pre-dialysis potassium (K) 4-6 mmol/L by centre. CI - confidence interval"
+compute_potassium_achievement(df) |> plot_caterpillar_proportion()
+```
+
+```{r}
+#| label: bk-k-funnel
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with pre-dialysis potassium (K) 4-6 mmol/L by centre"
+compute_potassium_achievement(df) |> plot_funnel()
+```
+
+```{r}
+#| label: bk-hco3-caterpillar
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with pre-dialysis Bicarbonate 18-26 mmol/L by centre. CI - confidence interval"
+compute_bicarbonate_achievement(df) |> plot_caterpillar_proportion()
+```
+
+```{r}
+#| label: bk-hco3-funnel
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with pre-dialysis Bicarbonate 18-26 mmol/L by centre"
+compute_bicarbonate_achievement(df) |> plot_funnel()
+```
+
+# Anaemia in prevalent adult ICHD patients
+
+```{r}
+#| label: ana-hb-median
+#| fig-cap: "Median haemoglobin (Hb) in adult patients prevalent to ICHD by centre"
+compute_hb_median(df) |>
+  plot_caterpillar_median(x_label = "Hb (g/dL)")
+```
+
+```{r}
+#| label: ana-ferritin-caterpillar
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with ferritin >=200 ug/L by centre. CI - confidence interval"
+compute_ferritin_achievement(df) |> plot_caterpillar_proportion()
+```
+
+```{r}
+#| label: ana-ferritin-funnel
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with ferritin >=200 ug/L by centre"
+compute_ferritin_achievement(df) |> plot_funnel()
+```
+
+```{r}
+#| label: ana-hb-dist
+#| fig-cap: "Distribution of haemoglobin (Hb) in adult patients prevalent to ICHD by centre"
+plot_distribution(df, .data$qble1,
+                  title = "Haemoglobin Distribution",
+                  x_label = "Hb (g/dL)",
+                  target_lower = 10, target_upper = 12)
+```
+
+```{r}
+#| label: ana-hb-achieve
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with Haemoglobin 10-12 g/dL by centre"
+compute_hb_achievement(df) |> plot_caterpillar_proportion()
+```
+
+```{r}
+#| label: ana-hb-funnel
+#| fig-cap: "Percentage of adult patients prevalent to ICHD with Haemoglobin 10-12 g/dL by centre"
+compute_hb_achievement(df) |> plot_funnel()
+```
+
+# Dialysis access in prevalent adult dialysis patients
+
+```{r}
+#| label: acc-bar
+#| fig-cap: "Vascular access type distribution by centre"
+access_data <- compute_access_distribution(df)
+plot_bar(access_data, .data$centre_code, .data$pct, .data$access_type,
+         title = "Vascular Access Type", position = "stack")
+```
+
+```{r}
+#| label: acc-avf
+#| fig-cap: "AVF rate by centre. CI - confidence interval"
+compute_avf_rate(df) |> plot_caterpillar_proportion()
+```
+
+```{r}
+#| label: acc-table
+compute_access_distribution(df) |>
+  tidyr::pivot_wider(
+    id_cols = c("centre_code", "centre_name"),
+    names_from = "access_type",
+    values_from = c("count", "pct"),
+    values_fill = 0
+  ) |>
+  knitr::kable(digits = 1,
+               caption = "Vascular access type by centre")
+```
+
+# Appendix 1 {.appendix}
+
+## Missing Data
+
+```{r}
+#| label: missing
+#| fig-cap: "Missing Data by Centre"
+compute_missing_national(df) |>
+  knitr::kable(digits = 1,
+               caption = "Missing data rates for key variables")
+```
+
+# Appendix 2 {.appendix}
+
+## Caterpillar plots
+
+Caterpillar plots show the **centre-level estimate** (dot) with its **95% confidence interval** (vertical whisker). Centres are ordered from highest to lowest (left to right). The **solid red line** shows the national weighted average. Where applicable, a **dotted green line** shows the clinical target.
+
+Confidence intervals for **proportions** use the Wilson score method. Confidence intervals for **medians** use the order-statistic method.
+
+## Funnel plots
+
+Funnel plots (Spiegelhalter method) show **centre proportion** (y-axis) against **centre size** (x-axis). The **solid orange line** is the national average. The **solid curves** are the 95% control limits; the **dashed curves** are the 99.7% control limits. Centres outside these limits show statistically unusual variation.
+
+# Appendix 3 {.appendix}
+
+## Patient-Level Data
+
+```{r}
+#| label: drilldown
+df |>
+  dplyr::select(
+    ID = record_id, Centre = centre_code, Consultant = consultant,
+    Age = age, Gender = gender, `URR (%)` = qblg9,
+    `Pre SBP` = qblg3, `Pre DBP` = qblg4,
+    `Post SBP` = qblg6, `Post DBP` = qblg7,
+    PO4 = qblb1, Ca = qblb4, PTH = qblb9,
+    `K+` = qbla9, HCO3 = qbla4, Hb = qble1,
+    Ferritin = qblf1, Access = qhd20
+  ) |>
+  head(50) |>
+  knitr::kable(digits = 1,
+               caption = "Patient-level data (first 50 rows)")
+```

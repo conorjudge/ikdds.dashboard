@@ -21,6 +21,7 @@ Returns age summary statistics and binned counts per centre.
 }
 \seealso{
 Other metrics-demographics: 
+\code{\link{compute_ethnicity_breakdown}()},
 \code{\link{compute_gender_breakdown}()},
 \code{\link{compute_patient_counts}()}
 }

@@ -78,16 +78,49 @@ REDCap field(s) used.
 |---|--------|----------|--------|
 | 21-23 | AVF/AVG/Catheter | `compute_access_distribution()` | qhd20 |
 
+## Individual Patient QA Metrics
+
+The Individual Patient QA page (Page 12) compares patient values against
+centre and national medians for the following 11 continuous metrics:
+
+| # | Metric | Field | Target | Type |
+|---|--------|-------|--------|------|
+| 1 | URR (%) | qblg9 | >65 | Greater than |
+| 2 | Pre SBP | qblg3 | <140 | Less than |
+| 3 | Pre DBP | qblg4 | <90 | Less than |
+| 4 | Post SBP | qblg6 | <130 | Less than |
+| 5 | Post DBP | qblg7 | <80 | Less than |
+| 6 | PO4 (mmol/L) | qblb1 | 1.1-1.7 | Range |
+| 7 | Ca (mmol/L) | qblb4 | 2.2-2.5 | Range |
+| 8 | PTH (pmol/L) | qblb9 | 16-72 | Range |
+| 9 | K+ (mmol/L) | qbla9 | 4-6 | Range |
+| 10 | HCO3 (mmol/L) | qbla4 | 18-26 | Range |
+| 11 | Hb (g/dL) | qble1 | 10-12 | Range |
+
+Status is classified as:
+
+- **In range** (green) — patient value meets the target
+- **Out of range** (red) — patient value outside the target
+- **Missing** (grey) — no value recorded for the patient
+
 ## Statistical Methods
 
 ### Wilson Score Confidence Intervals
 
 All proportion CIs use the Wilson score method via `wilson_ci()`,
 which provides better coverage than the normal approximation for
-small samples.
+small samples. See `vignette("statistical-methods")` for worked
+examples.
 
 ### Spiegelhalter Funnel Plots
 
 Funnel plots use exact binomial control limits (2-sigma = 95%,
 3-sigma = 99.7%) via `funnel_limits()`, following the UK Renal
 Registry methodology.
+
+### Centre and National Medians
+
+The Individual Patient QA page uses simple `median(x, na.rm = TRUE)`
+calculations to compute centre-level and national-level medians for
+each continuous metric. This avoids the metrics engine pipeline and
+operates directly on raw patient data.

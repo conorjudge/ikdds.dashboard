@@ -18,8 +18,9 @@ knitr::opts_chunk$set(
 
 The `ikdds.dashboard` package provides an interactive Shiny dashboard for
 the Irish Kidney Disease Data System (IKDDS) annual haemodialysis audit.
-It renders 23 clinical metrics across 7 domains as caterpillar plots,
-funnel plots, and patient-level drill-down tables.
+It provides **14 dashboard pages** rendering 23 clinical metrics across
+7 domains as caterpillar plots, funnel plots, centre profiles, individual
+patient QA comparisons, and patient-level drill-down tables.
 
 ## Quick Start
 
@@ -40,6 +41,25 @@ The dashboard supports two data sources, controlled by the
 - **redcap**: Reads live data from the IKDDS REDCap project.
   Requires `IKDDS_REDCAP_URI` and `IKDDS_REDCAP_TOKEN`.
 
+## Dashboard Pages
+
+| # | Page | Description |
+|---|------|-------------|
+| 1 | Overview | National summary KPIs, achievement rates, missing data overview |
+| 2 | Demographics | Age/gender distributions by centre |
+| 3 | PRD | Primary renal diagnosis (ERA classification) |
+| 4 | Dialysis | URR caterpillar + funnel, session frequency/duration |
+| 5 | Blood Pressure | Pre/post-HD BP caterpillar + funnel |
+| 6 | Biochemistry | PO4, Ca, PTH caterpillar + funnel |
+| 7 | Bicarb / K+ | Bicarbonate and potassium caterpillar + funnel |
+| 8 | Anaemia | Hb and ferritin caterpillar + funnel + distribution |
+| 9 | Access | Vascular access type distribution |
+| 10 | Data Quality | Completeness heatmap, flagged centres, national KPIs |
+| 11 | Centre Profile | Single-centre deep-dive vs national averages |
+| 12 | Individual | Patient-level QA: compare patient vs centre/national medians |
+| 13 | Methods | Auto-generated metric definitions and statistical methods |
+| 14 | Drill-down | Patient-level data table |
+
 ## Clinical Domains
 
 | Domain | Metrics | Key Plots |
@@ -52,6 +72,22 @@ The dashboard supports two data sources, controlled by the
 | Bicarb/K+ | Bicarbonate, potassium | Caterpillar, funnel |
 | Anaemia | Hb, ferritin | Caterpillar, funnel, histogram |
 | Vascular Access | AVF, AVG, catheter | Tables, bar charts |
+
+## Key Features
+
+- **Metrics Registry** — YAML-based centralised definitions
+  (`inst/metrics/metrics.yml`) with targets, suppression thresholds,
+  and compute function bindings.
+- **Suppression Engine** — Automatic suppression of centres with n < 10
+  patients, with visual indicators in plots and tables.
+- **Statistical Methods** — Wilson score confidence intervals for
+  proportions, order-statistic CIs for medians, Spiegelhalter funnel
+  plots with 95% and 99.7% control limits.
+- **Individual Patient QA** — Compare a single patient's lab results
+  against centre and national medians, with RAG status indicators
+  and bullet charts.
+- **Centre Profile** — Deep-dive into a single centre's performance
+  including consultant-level variation tables.
 
 ## Using Metric Functions Standalone
 
@@ -67,4 +103,16 @@ urr <- compute_urr_achievement(df)
 
 # Create caterpillar plot
 plot_caterpillar_proportion(urr, target = 0.65)
+
+# Compute centre-level missing data rates
+missing <- compute_missing_data(df)
 ```
+
+## Further Reading
+
+- `vignette("metric-definitions")` — All 23 metric definitions
+- `vignette("synthetic-data")` — Generating and exploring test data
+- `vignette("statistical-methods")` — CIs, funnels, and suppression
+- `vignette("individual-patient-qa")` — Individual patient QA module
+- `vignette("data-quality-workflow")` — Data completeness analysis
+- `vignette("deployment-guide")` — Deployment options

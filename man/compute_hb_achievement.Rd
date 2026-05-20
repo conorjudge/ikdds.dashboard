@@ -4,10 +4,12 @@
 \alias{compute_hb_achievement}
 \title{Compute haemoglobin 10-12 g/dL achievement by centre}
 \usage{
-compute_hb_achievement(df)
+compute_hb_achievement(df, group_col = "centre_code")
 }
 \arguments{
 \item{df}{Audit data tibble.}
+
+\item{group_col}{Grouping column: \code{"centre_code"} or \code{"consultant"}.}
 }
 \value{
 A tibble from \code{\link[=compute_centre_proportion]{compute_centre_proportion()}}.

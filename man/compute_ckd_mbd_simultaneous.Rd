@@ -4,10 +4,12 @@
 \alias{compute_ckd_mbd_simultaneous}
 \title{Compute simultaneous CKD-MBD control by centre}
 \usage{
-compute_ckd_mbd_simultaneous(df)
+compute_ckd_mbd_simultaneous(df, group_col = "centre_code")
 }
 \arguments{
 \item{df}{Audit data tibble.}
+
+\item{group_col}{Grouping column: \code{"centre_code"} or \code{"consultant"}.}
 }
 \value{
 A tibble from \code{\link[=compute_centre_proportion]{compute_centre_proportion()}}.
@@ -18,6 +20,7 @@ simultaneously: PO4 1.1-1.7, Ca 2.2-2.5, PTH 16-72.
 }
 \seealso{
 Other metrics-biochemistry: 
+\code{\link{compute_ca_po4_achievement}()},
 \code{\link{compute_calcium_achievement}()},
 \code{\link{compute_phosphate_achievement}()},
 \code{\link{compute_pth_achievement}()}

@@ -4,7 +4,7 @@
 \alias{hse_ggplot_theme}
 \title{HSE ggplot2 theme}
 \usage{
-hse_ggplot_theme(base_size = 12)
+hse_ggplot_theme(base_size = 14)
 }
 \arguments{
 \item{base_size}{Base font size (default 12).}
@@ -20,6 +20,8 @@ Other theme:
 \code{\link{hse_colours}()},
 \code{\link{hse_theme}()},
 \code{\link{scale_colour_hse}()},
-\code{\link{scale_fill_hse}()}
+\code{\link{scale_fill_hse}()},
+\code{\link{traffic_light_colour}()},
+\code{\link{traffic_light_theme}()}
 }
 \concept{theme}

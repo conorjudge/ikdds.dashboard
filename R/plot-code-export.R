@@ -32,8 +32,8 @@ generate_plot_code <- function(metric_fn, plot_fn,
     }
     if (length(filter_parts) > 0) {
       filter_code <- paste0(
-        " %>%\n",
-        paste(filter_parts, collapse = " %>%\n")
+        " |>\n",
+        paste(filter_parts, collapse = " |>\n")
       )
     }
   }

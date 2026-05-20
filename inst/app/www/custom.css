@@ -1,4 +1,4 @@
-/* IKDDS Dashboard - HSE Branding CSS */
+/* IKDDS Dashboard - HSE IIS Style CSS */
 
 :root {
   --hse-teal: #00617F;
@@ -9,46 +9,97 @@
   --hse-red: #DC3545;
 }
 
-/* Navbar styling */
+/* Body background */
+body {
+  background-color: #F8F9FA;
+}
+
+/* Navbar styling - teal, square corners */
 .navbar {
   background-color: var(--hse-teal) !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0 !important;
 }
 
 .navbar-brand {
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
 }
 
-/* Card styling */
+/* Header subtitle — filter state + chips */
+.header-subtitle {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0 1rem 0.25rem 1rem;
+  background-color: var(--hse-dark-teal);
+}
+
+/* Filter chip badges */
+.filter-chip {
+  display: inline-block;
+  background: var(--hse-light-teal);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin: 2px;
+  font-size: 0.75rem;
+}
+
+.filter-chip .remove {
+  cursor: pointer;
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+.filter-chip .remove:hover {
+  color: var(--hse-red);
+}
+
+/* Compare-by control */
+.compare-by-control {
+  margin-bottom: 0.5rem;
+}
+
+.compare-by-control .btn-group {
+  margin-bottom: 0.5rem;
+}
+
+.compare-by-control .radio-inline {
+  margin-right: 0.5rem;
+}
+
+/* Card styling - white headers, square corners, light border */
 .card {
-  border: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
+  border: 1px solid #DEE2E6;
+  box-shadow: none;
+  border-radius: 2px;
   margin-bottom: 1rem;
 }
 
 .card-header {
-  background-color: var(--hse-teal);
-  color: white;
+  background-color: #FFFFFF;
+  color: #212529;
   font-weight: 600;
-  border-radius: 8px 8px 0 0 !important;
+  font-size: 1.05rem;
+  border-bottom: 2px solid #DEE2E6;
+  border-radius: 2px 2px 0 0 !important;
   padding: 0.75rem 1rem;
 }
 
 /* Value box styling */
 .bslib-value-box {
-  border-radius: 8px;
+  border-radius: 2px;
   overflow: hidden;
 }
 
-/* Sidebar styling */
+/* Sidebar styling - right side, border-left */
 .bslib-sidebar-layout > .sidebar {
   background-color: #F8F9FA;
-  border-right: 1px solid #E9ECEF;
+  border-left: 1px solid #E9ECEF;
+  border-right: none;
 }
 
-/* DataTable styling */
+/* DataTable styling - keep teal headers */
 .dataTables_wrapper {
   font-size: 0.9rem;
 }
@@ -63,9 +114,59 @@ table.dataTable tbody tr:hover {
   background-color: #E8F4F8 !important;
 }
 
-/* Plot containers */
+/* Suppressed row styling */
+.suppressed-row {
+  color: #999;
+  font-style: italic;
+}
+
+/* Completeness indicators */
+.completeness-badge {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.completeness-green {
+  background: #28A745;
+}
+
+.completeness-amber {
+  background: #FFC107;
+}
+
+.completeness-red {
+  background: #DC3545;
+}
+
+/* Plot containers — prevent collapse and ensure consistent sizing */
 .plotly {
-  border-radius: 4px;
+  border-radius: 2px;
+}
+
+/* Plotly widgets within cards must respect their declared height */
+.card-body .plotly.html-widget {
+  min-height: 380px;
+  width: 100% !important;
+}
+
+/* Prevent plotly SVG from collapsing inside flex containers */
+.card-body .js-plotly-plot {
+  min-height: 380px;
+}
+
+/* Cards containing plots get a consistent minimum height */
+.card:has(.plotly) {
+  min-height: 420px;
+}
+
+/* Ensure plotly modebar doesn't push content down */
+.card-body .plotly .modebar-container {
+  position: absolute;
+  right: 10px;
+  top: 5px;
 }
 
 /* Filter panel */
@@ -73,12 +174,41 @@ table.dataTable tbody tr:hover {
   margin-bottom: 0.75rem;
 }
 
+/* Page description block - white box with teal left accent */
+.page-description {
+  background-color: #FFFFFF;
+  border-left: 4px solid var(--hse-teal);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 2px;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+/* Dashboard footer */
+.dashboard-footer {
+  background-color: #E9ECEF;
+  border-top: 1px solid #DEE2E6;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #6C757D;
+}
+
+.dashboard-footer .footer-left,
+.dashboard-footer .footer-right {
+  display: flex;
+  align-items: center;
+}
+
 /* Code viewer modal */
 .code-viewer pre {
   background-color: #2D2D2D;
   color: #F8F8F2;
   padding: 1rem;
-  border-radius: 6px;
+  border-radius: 2px;
   font-size: 0.85rem;
   max-height: 500px;
   overflow-y: auto;
@@ -90,6 +220,24 @@ table.dataTable tbody tr:hover {
   color: var(--hse-red);
 }
 
+/* Centre profile prompt card */
+.profile-prompt {
+  text-align: center;
+  padding: 3rem;
+  color: #6C757D;
+}
+
+/* Methods page cards */
+.card h5 {
+  color: var(--hse-teal);
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.card h5:first-child {
+  margin-top: 0;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .bslib-value-box {
@@ -99,4 +247,77 @@ table.dataTable tbody tr:hover {
   .card-header {
     font-size: 0.9rem;
   }
+
+  /* Reduce minimum plot heights on small screens */
+  .card-body .plotly.html-widget,
+  .card-body .js-plotly-plot {
+    min-height: 300px;
+  }
+
+  .card:has(.plotly) {
+    min-height: 340px;
+  }
+
+  .dashboard-footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.25rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.75rem;
+    padding: 0 0.5rem 0.25rem 0.5rem;
+  }
+
+  .filter-chip {
+    font-size: 0.65rem;
+  }
+}
+
+/* Source footnotes */
+.source-footnote {
+  font-size: 0.8rem;
+  color: #6C757D;
+  border-top: 1px solid #DEE2E6;
+  padding-top: 0.5rem;
+  margin-top: 1rem;
+  font-style: italic;
+}
+
+/* Role indicator badge */
+.role-indicator {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  margin-left: 0.5rem;
+}
+
+/* Traffic light KPI row */
+.traffic-light-row .bslib-value-box {
+  border-left: 4px solid;
+}
+
+/* Data quality warning banner */
+.dq-warning-banner {
+  background-color: #FFF3CD;
+  border: 1px solid #FFEEBA;
+  border-left: 4px solid var(--hse-orange);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 2px;
+  font-size: 0.9rem;
+  color: #856404;
+}
+
+/* Trend placeholder */
+.trend-placeholder {
+  text-align: center;
+  padding: 2rem;
+  color: #6C757D;
+  background-color: #F8F9FA;
+  border: 1px dashed #DEE2E6;
+  border-radius: 2px;
 }

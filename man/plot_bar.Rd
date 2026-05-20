@@ -43,6 +43,9 @@ Other plots:
 \code{\link{plot_caterpillar_median}()},
 \code{\link{plot_caterpillar_proportion}()},
 \code{\link{plot_distribution}()},
-\code{\link{plot_funnel}()}
+\code{\link{plot_funnel}()},
+\code{\link{plot_radar_prd}()},
+\code{\link{plot_trend_line}()},
+\code{\link{trend_placeholder}()}
 }
 \concept{plots}

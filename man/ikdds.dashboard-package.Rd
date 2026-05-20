@@ -12,6 +12,7 @@ Interactive Shiny dashboard for the Irish Kidney Disease Data System (IKDDS) ann
 Useful links:
 \itemize{
   \item \url{https://conorjudge.github.io/ikdds/}
+  \item \url{https://conorjudge.github.io/ikdds.dashboard/}
 }
 
 }

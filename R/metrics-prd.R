@@ -12,12 +12,12 @@
 compute_prd_proportions <- function(df) {
   prd_lookup <- load_era_prd_codes()
 
-  df_with_group <- df %>%
-    dplyr::mutate(code = as.character(.data$dxs01)) %>%
+  df_with_group <- df |>
+    dplyr::mutate(code = as.character(.data$dxs01)) |>
     dplyr::left_join(
-      prd_lookup %>% dplyr::mutate(code = as.character(.data$code)),
+      prd_lookup |> dplyr::mutate(code = as.character(.data$code)),
       by = "code"
-    ) %>%
+    ) |>
     dplyr::mutate(
       prd_group = dplyr::if_else(
         is.na(.data$group),
@@ -26,12 +26,12 @@ compute_prd_proportions <- function(df) {
       )
     )
 
-  df_with_group %>%
-    dplyr::group_by(.data$centre_code, .data$centre_name, .data$prd_group) %>%
-    dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
-    dplyr::group_by(.data$centre_code) %>%
-    dplyr::mutate(pct = round(.data$count / sum(.data$count) * 100, 1)) %>%
-    dplyr::ungroup() %>%
+  df_with_group |>
+    dplyr::group_by(.data$centre_code, .data$centre_name, .data$prd_group) |>
+    dplyr::summarise(count = dplyr::n(), .groups = "drop") |>
+    dplyr::group_by(.data$centre_code) |>
+    dplyr::mutate(pct = round(.data$count / sum(.data$count) * 100, 1)) |>
+    dplyr::ungroup() |>
     dplyr::arrange(.data$centre_code, dplyr::desc(.data$count))
 }
 
@@ -46,21 +46,21 @@ compute_prd_proportions <- function(df) {
 compute_prd_national <- function(df) {
   prd_lookup <- load_era_prd_codes()
 
-  df %>%
-    dplyr::mutate(code = as.character(.data$dxs01)) %>%
+  df |>
+    dplyr::mutate(code = as.character(.data$dxs01)) |>
     dplyr::left_join(
-      prd_lookup %>% dplyr::mutate(code = as.character(.data$code)),
+      prd_lookup |> dplyr::mutate(code = as.character(.data$code)),
       by = "code"
-    ) %>%
+    ) |>
     dplyr::mutate(
       prd_group = dplyr::if_else(
         is.na(.data$group),
         "Unknown/Missing",
         .data$group
       )
-    ) %>%
-    dplyr::group_by(.data$prd_group) %>%
-    dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
-    dplyr::mutate(pct = round(.data$count / sum(.data$count) * 100, 1)) %>%
+    ) |>
+    dplyr::group_by(.data$prd_group) |>
+    dplyr::summarise(count = dplyr::n(), .groups = "drop") |>
+    dplyr::mutate(pct = round(.data$count / sum(.data$count) * 100, 1)) |>
     dplyr::arrange(dplyr::desc(.data$count))
 }

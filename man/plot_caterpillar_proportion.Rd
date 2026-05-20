@@ -7,9 +7,10 @@
 plot_caterpillar_proportion(
   metric_df,
   title = NULL,
-  x_label = "Proportion (\%)",
+  y_label = "Proportion (\%)",
   target = NULL,
-  pct_scale = TRUE
+  pct_scale = TRUE,
+  x_label = NULL
 )
 }
 \arguments{
@@ -17,18 +18,20 @@ plot_caterpillar_proportion(
 
 \item{title}{Plot title.}
 
-\item{x_label}{X-axis label.}
+\item{y_label}{Y-axis label.}
 
 \item{target}{Optional target proportion (0-1) to show as reference line.}
 
-\item{pct_scale}{If \code{TRUE}, display x-axis as percentages (default TRUE).}
+\item{pct_scale}{If \code{TRUE}, display y-axis as percentages (default TRUE).}
 }
 \value{
 A ggplot2 object.
 }
 \description{
-Creates an ordered dot-and-whisker plot showing centre proportions
+Creates a vertical ordered dot-and-whisker plot showing centre proportions
 with Wilson score confidence intervals and a national average reference line.
+Style matches IKDDS audit report conventions: black points and whiskers,
+red solid national mean line, centres on x-axis sorted descending.
 }
 \seealso{
 Other plots: 
@@ -38,6 +41,9 @@ Other plots:
 \code{\link{plot_bar}()},
 \code{\link{plot_caterpillar_median}()},
 \code{\link{plot_distribution}()},
-\code{\link{plot_funnel}()}
+\code{\link{plot_funnel}()},
+\code{\link{plot_radar_prd}()},
+\code{\link{plot_trend_line}()},
+\code{\link{trend_placeholder}()}
 }
 \concept{plots}

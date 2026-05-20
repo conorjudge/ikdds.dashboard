@@ -1,0 +1,160 @@
+---
+title: "Data Quality Workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data Quality Workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+## Overview
+
+Data quality is critical for a reliable clinical audit. The IKDDS
+dashboard includes dedicated tools for assessing completeness,
+identifying problematic centres, and understanding missing data
+patterns. This vignette demonstrates the data quality workflow
+using the package's metric functions.
+
+```{r}
+library(ikdds.dashboard)
+
+df <- generate_synthetic_data(seed = 42, n_total = 1200)
+```
+
+## Missing Data Analysis
+
+### Centre-Level Missing Data
+
+The `compute_missing_data()` function computes the percentage of
+missing values for each clinical variable at each centre:
+
+```{r}
+missing <- compute_missing_data(df)
+head(missing)
+```
+
+### National-Level Summary
+
+For a national overview of missing data rates:
+
+```{r}
+missing_national <- compute_missing_national(df)
+missing_national
+```
+
+## Key Clinical Variables
+
+The dashboard tracks completeness for 13 key variables:
+
+| Variable | Label | Clinical Domain |
+|----------|-------|-----------------|
+| `qblg9` | URR | Dialysis adequacy |
+| `qblg3` | Pre SBP | Blood pressure |
+| `qblg4` | Pre DBP | Blood pressure |
+| `qblg6` | Post SBP | Blood pressure |
+| `qblg7` | Post DBP | Blood pressure |
+| `qblb1` | Phosphate | Biochemistry |
+| `qblb4` | Adj. Calcium | Biochemistry |
+| `qblb9` | PTH | Biochemistry |
+| `qbla9` | Potassium | Bicarbonate/K+ |
+| `qbla4` | Bicarbonate | Bicarbonate/K+ |
+| `qble1` | Haemoglobin | Anaemia |
+| `qblf1` | Ferritin | Anaemia |
+| `qhd20` | Vascular Access | Access |
+
+## Completeness Thresholds
+
+The dashboard applies a 70% completeness threshold. Centres below
+this threshold receive a warning label in caterpillar and funnel
+plots:
+
+```{r}
+urr <- compute_urr_achievement(df)
+labelled <- add_completeness_labels(urr, df, "qblg9")
+labelled[, c("centre_code", "n", "label")]
+```
+
+## Suppression for Small Numbers
+
+Centres with fewer than 10 patients are suppressed to prevent
+identification risk:
+
+```{r}
+# Demonstrate with a subset
+small_subset <- df[df$centre_code %in% c("BEA"), ][1:8, ]
+small_subset$centre_code <- "TINY"  # Simulate a small centre
+test_df <- rbind(df, small_subset)
+
+urr <- compute_urr_achievement(test_df)
+suppressed <- apply_suppression(urr, min_n = 10)
+suppressed[suppressed$centre_code == "TINY",
+           c("centre_code", "n", "proportion", "suppressed")]
+```
+
+## Unmapped Patients
+
+The dashboard identifies patients without consultant mapping,
+which can indicate data entry issues:
+
+```{r}
+unmapped <- compute_unmapped_patients(df)
+unmapped
+```
+
+## Validation Pipeline
+
+The `validate_machine_fields()` function checks for machine-populated
+fields that may contain invalid zero values and replaces them with NA:
+
+```{r}
+# Check how many zeros exist in lab fields before validation
+lab_fields <- c("qblg9", "qblb1", "qblb4", "qblb9", "qble1", "qblf1")
+zeros_before <- sapply(lab_fields, function(v) sum(df[[v]] == 0, na.rm = TRUE))
+zeros_before
+```
+
+```{r}
+# Validate (replaces 0s with NA for machine-populated fields)
+df_validated <- validate_machine_fields(df)
+zeros_after <- sapply(lab_fields, function(v) {
+  sum(df_validated[[v]] == 0, na.rm = TRUE)
+})
+zeros_after
+```
+
+## Data Quality Dashboard Page
+
+The Data Quality page (Page 10) in the dashboard provides:
+
+1. **National KPIs** — Overall completeness percentages
+2. **Completeness heatmap** — Centre x Variable matrix showing
+   missing data rates with colour coding
+3. **Flagged centres** — Centres with any metric >30% missing
+4. **Unmapped patients** — Patients without consultant assignment
+
+## Integrating with Individual Patient QA
+
+The Individual Patient QA page (Page 12) shows "Missing" status
+in grey for any metric where the patient has no recorded value.
+This helps identify data gaps at the individual level:
+
+```{r}
+# Check a patient's completeness
+patient <- df[1, ]
+metrics <- c("qblg9", "qblg3", "qblg4", "qblg6", "qblg7",
+             "qblb1", "qblb4", "qblb9", "qbla9", "qbla4", "qble1")
+patient_completeness <- sapply(metrics, function(v) !is.na(patient[[v]]))
+data.frame(
+  Metric = metrics,
+  Has_Value = patient_completeness
+)
+```

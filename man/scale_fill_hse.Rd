@@ -20,6 +20,8 @@ Other theme:
 \code{\link{hse_colours}()},
 \code{\link{hse_ggplot_theme}()},
 \code{\link{hse_theme}()},
-\code{\link{scale_colour_hse}()}
+\code{\link{scale_colour_hse}()},
+\code{\link{traffic_light_colour}()},
+\code{\link{traffic_light_theme}()}
 }
 \concept{theme}

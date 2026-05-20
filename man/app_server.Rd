@@ -13,7 +13,8 @@ app_server(config = dashboard_config())
 A Shiny server function.
 }
 \description{
-Wires all Shiny modules together.
+Wires all Shiny modules together. Applies role-based data filtering
+before passing data to modules.
 }
 \seealso{
 Other app: 

@@ -1,0 +1,355 @@
+# IKDDS Haemodialysis Audit — Metrics Registry
+# Each entry defines a clinical metric for the dashboard engine.
+# Used by metrics_registry() and compute_with_engine().
+
+# --- Dialysis Adequacy ---
+
+urr_achievement:
+  title: "URR >65%"
+  domain: dialysis
+  type: proportion
+  summary_stat: proportion
+  compute_fn: compute_urr_achievement
+  value_field: qblg9
+  target: 0.65
+  target_label: ">65%"
+  unit: "%"
+  numerator_desc: "Patients with URR >65%"
+  denominator_desc: "Patients with URR recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+    - funnel
+  notes: "KDOQI target. Optional filter: 3x/week only."
+
+urr_median:
+  title: "URR Median"
+  domain: dialysis
+  type: median
+  summary_stat: median
+  compute_fn: compute_urr_median
+  value_field: qblg9
+  target: 65
+  target_label: "65%"
+  unit: "%"
+  numerator_desc: ~
+  denominator_desc: "Patients with URR recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+  notes: "Median URR by centre."
+
+# --- Blood Pressure ---
+
+pre_bp_achievement:
+  title: "Pre-HD BP <140/90"
+  domain: bp
+  type: proportion
+  compute_fn: compute_pre_bp_achievement
+  value_field: qblg3
+  target: ~
+  target_label: "<140/90 mmHg"
+  unit: "%"
+  numerator_desc: "Patients with pre-HD SBP <140 AND DBP <90"
+  denominator_desc: "Patients with pre-HD BP recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+    - funnel
+  notes: "Requires both SBP (qblg3) and DBP (qblg4)."
+
+post_bp_achievement:
+  title: "Post-HD BP <130/80"
+  domain: bp
+  type: proportion
+  compute_fn: compute_post_bp_achievement
+  value_field: qblg6
+  target: ~
+  target_label: "<130/80 mmHg"
+  unit: "%"
+  numerator_desc: "Patients with post-HD SBP <130 AND DBP <80"
+  denominator_desc: "Patients with post-HD BP recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+    - funnel
+  notes: "Requires both SBP (qblg6) and DBP (qblg7)."
+
+# --- Biochemistry ---
+
+phosphate_achievement:
+  title: "PO4 1.1-1.7 mmol/L"
+  domain: biochemistry
+  type: proportion
+  compute_fn: compute_phosphate_achievement
+  value_field: qblb1
+  target: ~
+  target_label: "1.1-1.7 mmol/L"
+  unit: "%"
+  numerator_desc: "Patients with PO4 1.1-1.7 mmol/L"
+  denominator_desc: "Patients with phosphate recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+    - funnel
+  notes: "KDIGO target range."
+
+calcium_achievement:
+  title: "Adj Ca 2.2-2.5 mmol/L"
+  domain: biochemistry
+  type: proportion
+  compute_fn: compute_calcium_achievement
+  value_field: qblb4
+  target: ~
+  target_label: "2.2-2.5 mmol/L"
+  unit: "%"
+  numerator_desc: "Patients with adjusted calcium 2.2-2.5 mmol/L"
+  denominator_desc: "Patients with adjusted calcium recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+    - funnel
+  notes: "KDIGO target range."
+
+pth_achievement:
+  title: "PTH 16-72 pmol/L"
+  domain: biochemistry
+  type: proportion
+  compute_fn: compute_pth_achievement
+  value_field: qblb9
+  target: ~
+  target_label: "16-72 pmol/L"
+  unit: "%"
+  numerator_desc: "Patients with PTH 16-72 pmol/L"
+  denominator_desc: "Patients with PTH recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+    - funnel
+  notes: "2-9x upper limit of normal."
+
+ckd_mbd_simultaneous:
+  title: "Simultaneous CKD-MBD Control"
+  domain: biochemistry
+  type: proportion
+  compute_fn: compute_ckd_mbd_simultaneous
+  value_field: qblb1
+  target: ~
+  target_label: "All 3 in range"
+  unit: "%"
+  numerator_desc: "Patients with PO4, Ca, and PTH all in target range"
+  denominator_desc: "Patients with all three CKD-MBD labs recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+  notes: "Composite: PO4 1.1-1.7, Ca 2.2-2.5, PTH 16-72."
+
+ca_po4_product:
+  title: "Ca x PO4 Product <4.4"
+  domain: biochemistry
+  type: proportion
+  summary_stat: proportion
+  compute_fn: compute_ca_po4_achievement
+  value_field: qblb1
+  target: ~
+  target_label: "<4.4 mmol2/L2"
+  unit: "%"
+  numerator_desc: "Patients with Ca x PO4 product <4.4 mmol2/L2"
+  denominator_desc: "Patients with both calcium and phosphate recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+    - funnel
+  notes: "Calcium-phosphate product. Target <4.4 mmol2/L2."
+
+# --- Bicarbonate / Potassium ---
+
+potassium_achievement:
+  title: "K+ 4-6 mmol/L"
+  domain: bicarbonate
+  type: proportion
+  compute_fn: compute_potassium_achievement
+  value_field: qbla9
+  target: ~
+  target_label: "4-6 mmol/L"
+  unit: "%"
+  numerator_desc: "Patients with potassium 4-6 mmol/L"
+  denominator_desc: "Patients with potassium recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+    - funnel
+  notes: "Pre-dialysis target."
+
+bicarbonate_achievement:
+  title: "HCO3 18-26 mmol/L"
+  domain: bicarbonate
+  type: proportion
+  compute_fn: compute_bicarbonate_achievement
+  value_field: qbla4
+  target: ~
+  target_label: "18-26 mmol/L"
+  unit: "%"
+  numerator_desc: "Patients with bicarbonate 18-26 mmol/L"
+  denominator_desc: "Patients with bicarbonate recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+    - funnel
+  notes: "Pre-dialysis target."
+
+# --- Anaemia ---
+
+hb_achievement:
+  title: "Hb 10-12 g/dL"
+  domain: anaemia
+  type: proportion
+  compute_fn: compute_hb_achievement
+  value_field: qble1
+  target: ~
+  target_label: "10-12 g/dL"
+  unit: "%"
+  numerator_desc: "Patients with Hb 10-12 g/dL"
+  denominator_desc: "Patients with haemoglobin recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+    - funnel
+  notes: "KDIGO/NICE target range."
+
+hb_median:
+  title: "Hb Median (g/dL)"
+  domain: anaemia
+  type: median
+  compute_fn: compute_hb_median
+  value_field: qble1
+  target: ~
+  target_label: ~
+  unit: "g/dL"
+  numerator_desc: ~
+  denominator_desc: "Patients with haemoglobin recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+  notes: "Median Hb by centre."
+
+ferritin_achievement:
+  title: "Ferritin >=200 ug/L"
+  domain: anaemia
+  type: proportion
+  compute_fn: compute_ferritin_achievement
+  value_field: qblf1
+  target: ~
+  target_label: ">=200 ug/L"
+  unit: "%"
+  numerator_desc: "Patients with ferritin >=200 ug/L"
+  denominator_desc: "Patients with ferritin recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+    - funnel
+  notes: "Iron sufficiency threshold."
+
+# --- Vascular Access ---
+
+avf_rate:
+  title: "AVF Rate"
+  domain: access
+  type: proportion
+  compute_fn: compute_avf_rate
+  value_field: qhd20
+  target: ~
+  target_label: ~
+  unit: "%"
+  numerator_desc: "Patients with AVF"
+  denominator_desc: "Patients with vascular access recorded"
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - caterpillar
+    - funnel
+  notes: "AVF as proportion of all access types."
+
+# --- Distribution / Categorical metrics (simpler entries) ---
+
+session_frequency:
+  title: "Session Frequency"
+  domain: dialysis
+  type: distribution
+  compute_fn: compute_session_frequency
+  value_field: hdp01
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - table
+  notes: "<3x, 3x, >3x per week."
+
+session_duration:
+  title: "Session Duration"
+  domain: dialysis
+  type: distribution
+  compute_fn: compute_session_duration
+  value_field: hdp02
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - table
+  notes: "Duration bands from <3h to >4.5h."
+
+hb_distribution:
+  title: "Haemoglobin Distribution"
+  domain: anaemia
+  type: distribution
+  compute_fn: compute_hb_distribution
+  value_field: qble1
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - histogram
+  notes: "Binned Hb distribution by centre."
+
+access_distribution:
+  title: "Vascular Access Distribution"
+  domain: access
+  type: distribution
+  compute_fn: compute_access_distribution
+  value_field: qhd20
+  suppression:
+    min_n: 10
+    min_completeness: 0.70
+  plots:
+    - bar
+    - table
+  notes: "AVF / AVG / Catheter breakdown."

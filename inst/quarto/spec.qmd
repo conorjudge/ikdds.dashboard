@@ -1,0 +1,259 @@
+---
+title: "IKDDS Dashboard Specification"
+subtitle: "Technical specification for Power BI recreation by HSE IIS"
+author: "IKDDS Team"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    theme: cosmo
+    code-fold: true
+    code-tools: true
+    embed-resources: true
+params:
+  registry_path: null
+  data_path: null
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(rlang)
+library(cli)
+library(readr)
+library(knitr)
+
+# Load package: try library() first, then pkgload, then source R/ files
+pkg_root <- normalizePath(file.path(getwd(), "../.."), mustWork = FALSE)
+loaded <- FALSE
+if (requireNamespace("ikdds.dashboard", quietly = TRUE)) {
+  library(ikdds.dashboard)
+  loaded <- TRUE
+}
+if (!loaded && file.exists(file.path(pkg_root, "DESCRIPTION")) &&
+    requireNamespace("pkgload", quietly = TRUE)) {
+  loaded <- tryCatch({
+    pkgload::load_all(pkg_root)
+    TRUE
+  }, error = function(e) FALSE)
+}
+if (!loaded && file.exists(file.path(pkg_root, "R"))) {
+  r_files <- list.files(file.path(pkg_root, "R"), pattern = "\\.R$",
+                        full.names = TRUE)
+  priority <- c("theme", "config", "data-synthetic", "metrics-helpers",
+                "metrics-", "plot-helpers", "plot-")
+  ordered <- character()
+  for (p in priority) {
+    matched <- r_files[grepl(p, basename(r_files))]
+    ordered <- c(ordered, matched)
+  }
+  remaining <- setdiff(r_files, ordered)
+  remaining <- remaining[!grepl("^(mod-|app|run)", basename(remaining))]
+  for (f in c(ordered, remaining)) {
+    tryCatch(source(f, local = FALSE), error = function(e) {
+      message("Skipping ", basename(f), ": ", e$message)
+    })
+  }
+}
+
+# Load registry and data from params or generate fresh
+if (!is.null(params$registry_path) && file.exists(params$registry_path)) {
+  registry <- readRDS(params$registry_path)
+} else {
+  registry <- dashboard_registry()
+}
+
+if (!is.null(params$data_path) && file.exists(params$data_path)) {
+  df <- readRDS(params$data_path)
+} else {
+  df <- generate_synthetic_data(seed = 42, n_total = 1200)
+}
+```
+
+## Introduction
+
+This document is the **technical specification** for the IKDDS Haemodialysis Audit Dashboard. It is auto-generated from the dashboard registry — the single source of truth that defines every view, card, metric, and variable mapping.
+
+**Purpose:** Provide HSE Integrated Information Services (IIS) with all information needed to recreate this dashboard in Power BI, including:
+
+- Variable mappings (REDCap field → eMed source → display label)
+- Metric formulas in both R code and pseudocode (for DAX/Power Query translation)
+- Chart types and example figures
+- Statistical methods and formulae
+- Filter specifications
+- HSE colour palette
+
+## Colour Palette
+
+```{r}
+#| label: colours
+registry_colours() |> knitr::kable()
+```
+
+## Statistical Methods
+
+```{r}
+#| label: methods
+registry_stat_methods(registry) |> knitr::kable()
+```
+
+## Global Filters
+
+The following filters apply across all dashboard views:
+
+```{r}
+#| label: filters
+registry_filters(registry) |> knitr::kable()
+```
+
+## Variable Dictionary (All Views)
+
+Complete mapping of REDCap fields to eMed sources:
+
+```{r}
+#| label: all-variables
+registry_fields(registry) |>
+  dplyr::select(view_id, card_id, redcap, label, emed_table, emed_col, unit,
+                target_lower, target_upper) |>
+  dplyr::distinct(redcap, .keep_all = TRUE) |>
+  knitr::kable()
+```
+
+---
+
+```{r}
+#| label: view-sections
+#| output: asis
+#| fig-width: 8
+#| fig-height: 5
+
+for (view in registry) {
+  cat("\n\n## ", view$view_title, "\n\n")
+  cat("**Description:** ", view$description, "\n\n")
+  cat("**Filters:** ", paste(view$filters, collapse = ", "), "\n\n")
+
+  # Variable dictionary for this view
+  view_fields <- list()
+  for (card in view$cards) {
+    for (field in card$fields) {
+      view_fields <- c(view_fields, list(tibble::tibble_row(
+        REDCap = field$redcap,
+        Label  = field$label,
+        `eMed Table` = field$emed_table,
+        `eMed Column` = field$emed_col,
+        Unit   = field$unit %||% "",
+        `Target Lower` = ifelse(is.na(field$target_lower), "", as.character(field$target_lower)),
+        `Target Upper` = ifelse(is.na(field$target_upper), "", as.character(field$target_upper))
+      )))
+    }
+  }
+
+  if (length(view_fields) > 0) {
+    fields_tbl <- dplyr::bind_rows(view_fields) |> dplyr::distinct()
+    cat("\n### Variable Dictionary\n\n")
+    print(knitr::kable(fields_tbl))
+    cat("\n")
+  }
+
+  # Per-card sections
+  for (card in view$cards) {
+    cat("\n### ", card$title, "\n\n")
+    cat("- **Card ID:** `", card$card_id, "`\n")
+    cat("- **Card Type:** ", card$card_type, "\n")
+    if (!is.null(card$chart_type)) {
+      cat("- **Chart Type:** ", card$chart_type, "\n")
+    }
+    if (!is.null(card$metric_fn)) {
+      cat("- **Metric Function:** `", card$metric_fn, "()`\n")
+    }
+    if (!is.null(card$plot_fn)) {
+      cat("- **Plot Function:** `", card$plot_fn, "()`\n")
+    }
+    if (!is.null(card$stat_method)) {
+      cat("- **Statistical Method:** ", card$stat_method, "\n")
+    }
+    if (!is.null(card$target)) {
+      cat("- **Target:** ", card$target, "\n")
+    }
+    cat("\n")
+
+    # R Code
+    if (!is.null(card$r_code) && !is.na(card$r_code)) {
+      cat("\n**R Code:**\n\n")
+      cat("```r\n")
+      cat(card$r_code, "\n")
+      cat("```\n\n")
+    }
+
+    # Pseudocode
+    if (!is.null(card$pseudocode) && !is.na(card$pseudocode)) {
+      cat("\n**Pseudocode (for DAX/Power Query):**\n\n")
+      cat("> ", card$pseudocode, "\n\n")
+    }
+
+    # Example figure
+    if (!is.null(card$plot_fn) && card$card_type == "chart") {
+      cat("\n**Example Figure:**\n\n")
+
+      tryCatch({
+        if (card$chart_type == "bar") {
+          if (card$card_id == "demo_age_bar") {
+            p <- plot_bar(compute_age_distribution(df)$bins,
+                          .data$centre_code, .data$pct, .data$age_band,
+                          title = card$title, y_label = "Percentage (%)")
+          } else if (card$card_id == "demo_gender_bar") {
+            p <- plot_bar(compute_gender_breakdown(df),
+                          .data$centre_code, .data$pct, .data$gender,
+                          title = card$title, y_label = "Percentage (%)")
+          } else if (card$card_id == "prd_bar") {
+            p <- plot_bar(compute_prd_proportions(df),
+                          .data$centre_code, .data$pct, .data$prd_group,
+                          title = card$title, position = "stack")
+          } else if (card$card_id == "acc_bar") {
+            p <- plot_bar(compute_access_distribution(df),
+                          .data$centre_code, .data$pct, .data$access_type,
+                          title = card$title, position = "stack")
+          }
+          print(p)
+        } else if (!is.null(card$metric_fn)) {
+          metric_fn <- get(card$metric_fn)
+          plot_fn <- get(card$plot_fn)
+          metric_data <- metric_fn(df)
+
+          if (card$chart_type == "caterpillar_proportion") {
+            if (!is.null(card$target)) {
+              p <- plot_fn(metric_data, target = card$target)
+            } else {
+              p <- plot_fn(metric_data)
+            }
+          } else if (card$chart_type == "caterpillar_median") {
+            x_lab <- if (card$card_id == "dial_urr_median") "URR (%)"
+                     else if (card$card_id == "ana_hb_median") "Hb (g/dL)"
+                     else "Value"
+            p <- plot_fn(metric_data, x_label = x_lab)
+          } else if (card$chart_type == "funnel") {
+            p <- plot_fn(metric_data)
+          } else {
+            p <- plot_fn(metric_data)
+          }
+          print(p)
+        } else if (card$chart_type == "distribution") {
+          p <- plot_distribution(df, .data$qble1,
+                                 title = card$title,
+                                 x_label = "Hb (g/dL)",
+                                 target_lower = 10, target_upper = 12)
+          print(p)
+        }
+      }, error = function(e) {
+        cat("\n*Figure generation failed:* ", conditionMessage(e), "\n\n")
+      })
+    }
+  }
+}
+```

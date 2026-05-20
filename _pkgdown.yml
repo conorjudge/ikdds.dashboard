@@ -1,4 +1,159 @@
-url: ~
+url: https://conorjudge.github.io/ikdds.dashboard/
 template:
   bootstrap: 5
 
+articles:
+  - title: Getting Started
+    navbar: Getting Started
+    contents:
+      - dashboard-overview
+      - deployment-guide
+
+  - title: Clinical Metrics
+    navbar: Metrics
+    contents:
+      - metric-definitions
+      - statistical-methods
+
+  - title: Features
+    navbar: Features
+    contents:
+      - synthetic-data
+      - individual-patient-qa
+      - data-quality-workflow
+
+reference:
+  - title: Launch the Dashboard
+    contents:
+      - run_app
+      - app_ui
+      - app_server
+      - dashboard_config
+
+  - title: Data Sources
+    contents:
+      - get_audit_data
+      - generate_synthetic_data
+      - cached_audit_data
+
+  - title: Metric Functions — Dialysis
+    contents:
+      - compute_urr_achievement
+      - compute_urr_median
+      - compute_session_frequency
+      - compute_session_duration
+
+  - title: Metric Functions — Blood Pressure
+    contents:
+      - compute_pre_bp_achievement
+      - compute_post_bp_achievement
+      - compute_bp_summary
+
+  - title: Metric Functions — Biochemistry
+    contents:
+      - compute_phosphate_achievement
+      - compute_calcium_achievement
+      - compute_pth_achievement
+      - compute_ca_po4_achievement
+      - compute_ckd_mbd_simultaneous
+
+  - title: Metric Functions — Bicarbonate & Potassium
+    contents:
+      - compute_potassium_achievement
+      - compute_bicarbonate_achievement
+
+  - title: Metric Functions — Anaemia
+    contents:
+      - compute_hb_achievement
+      - compute_hb_median
+      - compute_hb_distribution
+      - compute_ferritin_achievement
+
+  - title: Metric Functions — Access
+    contents:
+      - compute_access_distribution
+      - compute_avf_rate
+
+  - title: Metric Functions — Demographics & PRD
+    contents:
+      - compute_patient_counts
+      - compute_age_distribution
+      - compute_gender_breakdown
+      - compute_ethnicity_breakdown
+      - compute_prd_proportions
+      - compute_prd_national
+
+  - title: Metric Functions — Data Quality
+    contents:
+      - compute_missing_data
+      - compute_missing_national
+      - compute_unmapped_patients
+
+  - title: Metrics Engine
+    contents:
+      - compute_with_engine
+      - compute_centre_proportion
+      - compute_centre_median
+      - compute_consultant_metric
+      - compute_risk_adjusted
+      - apply_suppression
+      - add_completeness_labels
+      - validate_machine_fields
+
+  - title: Metrics Registry
+    contents:
+      - metrics_registry
+      - get_metric_config
+      - reset_registry_cache
+
+  - title: Statistical Helpers
+    contents:
+      - wilson_ci
+      - median_ci
+      - funnel_limits
+      - pct_in_range
+      - national_average_proportion
+      - national_average_median
+
+  - title: Plots
+    contents:
+      - plot_caterpillar_proportion
+      - plot_caterpillar_median
+      - plot_funnel
+      - plot_bar
+      - plot_distribution
+      - plot_radar_prd
+      - plot_trend_line
+      - trend_placeholder
+      - generate_plot_code
+
+  - title: Tables
+    contents:
+      - hse_datatable
+      - format_pct_column
+
+  - title: Theme & Styling
+    contents:
+      - hse_theme
+      - hse_colours
+      - hse_ggplot_theme
+      - traffic_light_colour
+      - traffic_light_theme
+      - scale_colour_hse
+      - scale_fill_hse
+
+  - title: UI Helpers
+    contents:
+      - page_description
+      - source_footnote
+
+  - title: Access Control
+    contents:
+      - get_user_role
+      - get_user_centre
+      - filter_by_role
+      - role_display_label
+
+  - title: Shiny Modules
+    contents:
+      - starts_with("mod_")

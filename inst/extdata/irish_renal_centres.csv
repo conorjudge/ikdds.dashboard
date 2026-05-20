@@ -1,8 +1,24 @@
-centre_code,centre_name,region
-BEA,Beaumont Hospital,Dublin
-MAT,Mater Misericordiae University Hospital,Dublin
-TAL,Tallaght University Hospital,Dublin
-STJ,St. James's Hospital,Dublin
-CUH,Cork University Hospital,Munster
-UHL,University Hospital Limerick,Midwest
-GUH,Galway University Hospital,West
+centre_code,centre_name,region,unit_code,unit_name,unit_type
+BEA,Beaumont Hospital,Dublin and North East,BEA,Beaumont Hospital,Renal
+MAT,Mater Misericordiae University Hospital,Dublin and Midlands,MAT,Mater Misericordiae University Hospital,Renal
+SVH,St Vincent's University Hospital,Dublin and Midlands,SVH,St Vincent's University Hospital,Renal
+TAL,Tallaght University Hospital,Dublin and Midlands,TAL,Tallaght University Hospital / St James's Hospital,Renal
+CUH,Cork University Hospital,South,CUH,Cork University Hospital,Renal
+UHK,University Hospital Kerry,South West,UHK,University Hospital Kerry,Renal
+UHL,University Hospital Limerick,Mid West,UHL,University Hospital Limerick,Renal
+WAT,University Hospital Waterford,South,WAT,University Hospital Waterford,Renal
+GUH,Merlin Park University Hospital,West and North West,GUH,Galway University Hospitals,Renal
+MAY,Mayo University Hospital,West and North West,MAY,Mayo University Hospital,Renal
+SLI,Sligo University Hospital,West and North West,SLI,Sligo University Hospital,Renal
+LET,Letterkenny University Hospital,West and North West,LET,Letterkenny University Hospital,Renal
+CAV,Cavan General Hospital,West and North West,CAV,Cavan General Hospital,Renal
+TUL,Midland Regional Hospital Tullamore,Dublin and Midlands,TUL,Midland Regional Hospital Tullamore,Renal
+NCR,Northern Cross Dialysis Unit,Dublin and North East,BEA,Beaumont Hospital,Satellite
+DRO,Drogheda Dialysis Unit,Dublin and North East,BEA,Beaumont Hospital,Satellite
+BCN,Beacon Renal Sandyford,Dublin and Midlands,MAT,Mater Misericordiae University Hospital,Satellite
+CLN,Clondalkin Dialysis Unit,Dublin and Midlands,TAL,Tallaght University Hospital / St James's Hospital,Satellite
+POR,Portlaoise Dialysis Unit,Dublin and Midlands,TAL,Tallaght University Hospital / St James's Hospital,Satellite
+FKK,Kilkenny Dialysis Unit,South,CUH,Cork University Hospital,Satellite
+WEX,Wexford Dialysis Unit,South,CUH,Cork University Hospital,Satellite
+LSU,Limerick Satellite Dialysis Unit,Mid West,UHL,University Hospital Limerick,Satellite
+WEL,Wellstone Renal Dialysis Clinic,West and North West,GUH,Galway University Hospitals,Satellite
