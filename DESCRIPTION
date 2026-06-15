@@ -53,4 +53,4 @@ Suggests:
     quarto
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-URL: https://conorjudge.github.io/ikdds/, https://conorjudge.github.io/ikdds.dashboard/
+URL: https://github.com/ikddsystem/ikdds-dashboard, https://ikddsystem.github.io/ikdds-dashboard/

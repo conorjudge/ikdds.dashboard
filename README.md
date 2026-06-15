@@ -61,7 +61,7 @@ filters, Wilson CIs, and Spiegelhalter funnels.
 
 ```r
 # Install from source
-devtools::install("ikdds_dashboard/ikdds.dashboard")
+pak::pak("ikddsystem/ikdds-dashboard")
 
 # Launch with synthetic demo data (default)
 library(ikdds.dashboard)
